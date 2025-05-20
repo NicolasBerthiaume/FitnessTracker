@@ -1,19 +1,36 @@
 plugins {
-    id 'java'
+    id 'application'
 }
-
-group = 'org.example'
-version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
+def javafxVersion = '21'
+def osName = 'win'
+
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation "org.openjfx:javafx-base:$javafxVersion:$osName"
+    implementation "org.openjfx:javafx-controls:$javafxVersion:$osName"
+    implementation "org.openjfx:javafx-graphics:$javafxVersion:$osName"
+    implementation "org.openjfx:javafx-fxml:$javafxVersion:$osName"
 }
 
-test {
-    useJUnitPlatform()
+application {
+    mainClass = 'app.FitnessTrackerApp'
+}
+
+// Add JavaFX modules to compile task (IMPORTANT)
+tasks.compileJava {
+    options.compilerArgs += [
+            '--module-path', configurations.compileClasspath.asPath,
+            '--add-modules', 'javafx.controls,javafx.fxml'
+    ]
+}
+
+run {
+    jvmArgs = [
+            '--module-path', configurations.runtimeClasspath.asPath,
+            '--add-modules', 'javafx.controls,javafx.fxml'
+    ]
 }
