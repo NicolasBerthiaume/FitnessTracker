@@ -26,6 +26,7 @@ public class CaloriesChartView extends VBox {
         caloriesChart.getData().add(caloriesSeries);
 
         this.getChildren().add(caloriesChart);
+        updateCaloriesChart(fitnessDataManager);
     }
 
     public void updateCaloriesChart(FitnessDataManager fitnessDataManager) {

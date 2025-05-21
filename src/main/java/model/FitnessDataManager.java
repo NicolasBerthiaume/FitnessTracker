@@ -42,11 +42,11 @@ public class FitnessDataManager {
         return weightData;
     }
 
-    public Map<LocalDate, Double> getAllCaloriesData() {
-        Map<LocalDate, Double> caloriesData = new TreeMap<>();
+    public Map<LocalDate, Integer> getAllCaloriesData() {
+        Map<LocalDate, Integer> caloriesData = new TreeMap<>();
         for (Map.Entry<LocalDate, FitnessEntry> entry : fitnessData.entrySet()) {
             if (entry.getValue().getCalories() != null) {
-                caloriesData.put(entry.getKey(), entry.getValue().getWeight());
+                caloriesData.put(entry.getKey(), entry.getValue().getCalories());
             }
         }
         return caloriesData;
