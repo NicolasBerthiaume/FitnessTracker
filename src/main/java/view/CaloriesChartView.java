@@ -10,11 +10,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class CaloriesChartView extends VBox {
-    private final LineChart<Number, Number> caloriesChart;
-    private final XYChart.Series<Number, Number> caloriesSeries;
+    private final LineChart<String, Number> caloriesChart;
+    private final XYChart.Series<String, Number> caloriesSeries;
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
 
     public CaloriesChartView(FitnessDataManager fitnessDataManager) {
-        NumberAxis xAxis = new NumberAxis();
+        CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Day");
         yAxis.setLabel("Calories");
@@ -36,7 +37,8 @@ public class CaloriesChartView extends VBox {
         for (LocalDate date : data.keySet()) {
             FitnessEntry entry = data.get(date);
             if (entry.getCalories() != null) {
-                caloriesSeries.getData().add(new XYChart.Data<>(index++, entry.getCalories()));
+                String label = date.format(dateFormatter);
+                caloriesSeries.getData().add(new XYChart.Data<>(label, entry.getCalories()));
             }
         }
     }

@@ -10,12 +10,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class WeightChartView extends VBox {
-    private final LineChart<Number, Number> weightChart;
-    private final XYChart.Series<Number, Number> weightSeries;
+    private final LineChart<String, Number> weightChart;
+    private final XYChart.Series<String, Number> weightSeries;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
 
     public WeightChartView(FitnessDataManager fitnessDataManager) {
-        NumberAxis xAxis = new NumberAxis();
+        CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Day");
         yAxis.setLabel("Weight (kg)");
@@ -37,7 +37,8 @@ public class WeightChartView extends VBox {
         for (LocalDate date : data.keySet()) {
             FitnessEntry entry = data.get(date);
             if (entry.getWeight() != null) {
-                weightSeries.getData().add(new XYChart.Data<>(index++, entry.getWeight()));
+                String label = date.format(dateFormatter);
+                weightSeries.getData().add(new XYChart.Data<>(label, entry.getWeight()));
             }
         }
     }
