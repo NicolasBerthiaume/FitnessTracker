@@ -42,10 +42,7 @@ public class CaloriesChartView extends VBox {
             FitnessEntry entry = data.get(date);
             if (entry.getCalories() != null) {
                 String label = date.format(dateFormatter);
-                int calories = entry.getCalories();
-
-                XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(label, calories);
-                caloriesSeries.getData().add(dataPoint);
+                caloriesSeries.getData().add(new XYChart.Data<>(label, entry.getCalories()));
             }
         }
 
