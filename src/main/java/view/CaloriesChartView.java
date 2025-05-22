@@ -2,6 +2,10 @@ package view;
 
 import javafx.scene.chart.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Tooltip;
+import javafx.application.Platform;
+import javafx.scene.Node;
+
 import model.FitnessDataManager;
 import model.FitnessEntry;
 
@@ -33,13 +37,28 @@ public class CaloriesChartView extends VBox {
     public void updateCaloriesChart(FitnessDataManager fitnessDataManager) {
         caloriesSeries.getData().clear();
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
-        int index = 0;
+
         for (LocalDate date : data.keySet()) {
             FitnessEntry entry = data.get(date);
             if (entry.getCalories() != null) {
                 String label = date.format(dateFormatter);
-                caloriesSeries.getData().add(new XYChart.Data<>(label, entry.getCalories()));
+                int calories = entry.getCalories();
+
+                XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(label, calories);
+                caloriesSeries.getData().add(dataPoint);
             }
         }
+
+        //this shows the specific entries when hovering over them
+        Platform.runLater(() -> {
+            for (XYChart.Data<String, Number> dataPoint : caloriesSeries.getData()) {
+                Node node = dataPoint.getNode();
+                if (node != null) {
+                    String tooltipText = dataPoint.getXValue() + ": " + dataPoint.getYValue() + " cal";
+                    Tooltip tooltip = new Tooltip(tooltipText);
+                    Tooltip.install(node, tooltip);
+                }
+            }
+        });
     }
 }

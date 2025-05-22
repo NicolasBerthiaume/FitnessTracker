@@ -1,6 +1,9 @@
 package view;
 
+import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.chart.*;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import model.FitnessDataManager;
 import model.FitnessEntry;
@@ -57,5 +60,17 @@ public class WeightChartView extends VBox {
                 weightSeries.getData().add(new XYChart.Data<>(label, entry.getWeight()));
             }
         }
+
+        //this shows the specific entries when hovering over them
+        Platform.runLater(() -> {
+            for (XYChart.Data<String, Number> dataPoint : weightSeries.getData()) {
+                Node node = dataPoint.getNode();
+                if (node != null) {
+                    String tooltipText = dataPoint.getXValue() + ": " + dataPoint.getYValue() + " kg";
+                    Tooltip tooltip = new Tooltip(tooltipText);
+                    Tooltip.install(node, tooltip);
+                }
+            }
+        });
     }
 }
