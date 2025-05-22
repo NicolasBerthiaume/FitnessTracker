@@ -16,7 +16,23 @@ public class WeightChartView extends VBox {
 
     public WeightChartView(FitnessDataManager fitnessDataManager) {
         CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
+
+        //sets the maximum of the y-axis to the highest recorded entry +1 (fallback 100)
+        //and the mininum of the y-axis to the lower recorded entry -1 (fallback 60)
+        NumberAxis yAxis;
+        double minWeight = fitnessDataManager.getAllFitnessData().values().stream()
+                .filter(e -> e.getWeight() != null)
+                .mapToDouble(FitnessEntry::getWeight)
+                .min().orElse(60); // fallback min
+
+        double maxWeight = fitnessDataManager.getAllFitnessData().values().stream()
+                .filter(e -> e.getWeight() != null)
+                .mapToDouble(FitnessEntry::getWeight)
+                .max().orElse(100); // fallback max
+
+        yAxis = new NumberAxis(minWeight - 1, maxWeight + 1, 1);
+        yAxis.setAutoRanging(false);
+
         xAxis.setLabel("Day");
         yAxis.setLabel("Weight (kg)");
 
