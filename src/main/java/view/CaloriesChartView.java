@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class CaloriesChartView extends VBox {
-    private final LineChart<String, Number> caloriesChart;
+    private final BarChart<String, Number> caloriesChart;
     private final XYChart.Series<String, Number> caloriesSeries;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
 
@@ -20,8 +20,8 @@ public class CaloriesChartView extends VBox {
         xAxis.setLabel("Day");
         yAxis.setLabel("Calories");
 
-        caloriesChart = new LineChart<>(xAxis, yAxis);
-        caloriesChart.setTitle("Daily Calories");
+        caloriesChart = new BarChart<>(xAxis, yAxis);
+        caloriesChart.setTitle("Daily Calories Intake");
         caloriesSeries = new XYChart.Series<>();
         caloriesSeries.setName("Calories");
         caloriesChart.getData().add(caloriesSeries);

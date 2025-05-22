@@ -37,7 +37,7 @@ public class WeightChartView extends VBox {
         yAxis.setLabel("Weight (kg)");
 
         weightChart = new LineChart<>(xAxis, yAxis);
-        weightChart.setTitle("Daily Weight");
+        weightChart.setTitle("Daily Weight-ins");
         weightSeries = new XYChart.Series<>();
         weightSeries.setName("Weight");
         weightChart.getData().add(weightSeries);
