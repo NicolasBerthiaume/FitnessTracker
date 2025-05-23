@@ -19,6 +19,9 @@ public class FitnessDataManager {
         FitnessEntry updatedEntry = new FitnessEntry(date, weight, currentEntry.getCalories());
         fitnessData.put(date, updatedEntry);
         CSVUtil.addWeightEntry(date, weight);
+
+        //refresh
+        loadDataFromCSV();
     }
 
     public void addCalories(LocalDate date, int calories) {
@@ -26,6 +29,9 @@ public class FitnessDataManager {
         FitnessEntry updatedEntry = new FitnessEntry(date, currentEntry.getWeight(), calories);
         fitnessData.put(date, updatedEntry);
         CSVUtil.addCaloriesEntry(date, calories);
+
+        //refresh
+        loadDataFromCSV();
     }
 
     public Map<LocalDate, FitnessEntry> getAllFitnessData() {

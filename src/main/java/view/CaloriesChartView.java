@@ -1,5 +1,6 @@
 package view;
 
+import javafx.collections.FXCollections;
 import javafx.scene.chart.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Tooltip;
@@ -11,15 +12,18 @@ import model.FitnessEntry;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class CaloriesChartView extends VBox {
     private final BarChart<String, Number> caloriesChart;
     private final XYChart.Series<String, Number> caloriesSeries;
+    private final CategoryAxis xAxis;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
 
     public CaloriesChartView(FitnessDataManager fitnessDataManager) {
-        CategoryAxis xAxis = new CategoryAxis();
+        xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Day");
         yAxis.setLabel("Calories");
@@ -35,13 +39,19 @@ public class CaloriesChartView extends VBox {
     }
 
     public void updateCaloriesChart(FitnessDataManager fitnessDataManager) {
-        caloriesSeries.getData().clear();
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
+
+        caloriesSeries.getData().clear();
+
+        // this line and the one in the loop ensures that
+        // the date labels get updated correctly when adding new data in the app
+        xAxis.setCategories(FXCollections.observableArrayList());
 
         for (LocalDate date : data.keySet()) {
             FitnessEntry entry = data.get(date);
             if (entry.getCalories() != null) {
                 String label = date.format(dateFormatter);
+                xAxis.getCategories().add(label);
                 caloriesSeries.getData().add(new XYChart.Data<>(label, entry.getCalories()));
             }
         }

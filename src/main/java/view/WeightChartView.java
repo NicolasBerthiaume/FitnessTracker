@@ -1,6 +1,7 @@
 package view;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.Tooltip;
@@ -10,15 +11,18 @@ import model.FitnessEntry;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class WeightChartView extends VBox {
     private final LineChart<String, Number> weightChart;
     private final XYChart.Series<String, Number> weightSeries;
+    private final CategoryAxis xAxis;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
 
     public WeightChartView(FitnessDataManager fitnessDataManager) {
-        CategoryAxis xAxis = new CategoryAxis();
+        xAxis = new CategoryAxis();
 
         //sets the maximum of the y-axis to the highest recorded entry +1 (fallback 100)
         //and the mininum of the y-axis to the lower recorded entry -1 (fallback 60)
@@ -50,14 +54,19 @@ public class WeightChartView extends VBox {
     }
 
     public void updateWeightChart(FitnessDataManager fitnessDataManager) {
-        weightSeries.getData().clear();
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
 
-        int index = 0;
+        weightSeries.getData().clear();
+
+        // this line and the one in the loop ensures that
+        // the date labels get updated correctly when adding new data in the app
+        xAxis.setCategories(FXCollections.observableArrayList());
+
         for (LocalDate date : data.keySet()) {
             FitnessEntry entry = data.get(date);
             if (entry.getWeight() != null) {
                 String label = date.format(dateFormatter);
+                xAxis.getCategories().add(label);
                 weightSeries.getData().add(new XYChart.Data<>(label, entry.getWeight()));
             }
         }
