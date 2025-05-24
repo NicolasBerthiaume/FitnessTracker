@@ -62,15 +62,33 @@ public class WeightChartView extends VBox {
         // the date labels get updated correctly when adding new data in the app
         xAxis.setCategories(FXCollections.observableArrayList());
 
+        double minWeight = Double.MAX_VALUE;
+        double maxWeight = Double.MIN_VALUE;
+
         for (LocalDate date : data.keySet()) {
             if (date.isBefore(startDate)) { continue; }
             FitnessEntry entry = data.get(date);
             if (entry.getWeight() != null) {
+                double weight = entry.getWeight();
                 String label = date.format(dateFormatter);
                 xAxis.getCategories().add(label);
                 weightSeries.getData().add(new XYChart.Data<>(label, entry.getWeight()));
+
+                //tracks if new min/max weight has changed
+                if (weight < minWeight) minWeight = weight;
+                if (weight > maxWeight) maxWeight = weight;
             }
         }
+
+        //fallback in case no data
+        if (minWeight == Double.MAX_VALUE || maxWeight == Double.MIN_VALUE) {
+            minWeight = 60;
+            maxWeight = 100;
+        }
+
+        //update new min/max weight values if needed
+        ((NumberAxis) weightChart.getYAxis()).setLowerBound(minWeight - 1);
+        ((NumberAxis) weightChart.getYAxis()).setUpperBound(maxWeight + 1);
 
         //this shows the specific entries when hovering over them
         Platform.runLater(() -> {
