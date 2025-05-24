@@ -42,19 +42,19 @@ public class FitnessDataManager {
         updateCaloriesForMeal(date, calories, "snack");
     }
 
-    private void updateCaloriesForMeal(LocalDate date, int calories, String mealType) {
+    private void updateCaloriesForMeal(LocalDate date, int caloriesToAdd, String mealType) {
         FitnessEntry currentEntry = fitnessData.getOrDefault(date, new FitnessEntry(date, null, 0, 0, 0, 0));
 
-        int breakfast = currentEntry.getBreakfastCalories();
-        int lunch = currentEntry.getLunchCalories();
-        int dinner = currentEntry.getDinnerCalories();
-        int snack = currentEntry.getSnackCalories();
+        Integer breakfast = currentEntry.getBreakfastCalories() == null ? 0 : currentEntry.getBreakfastCalories();
+        Integer lunch = currentEntry.getLunchCalories() == null ? 0 : currentEntry.getLunchCalories();
+        Integer dinner = currentEntry.getDinnerCalories() == null ? 0 : currentEntry.getDinnerCalories();
+        Integer snack = currentEntry.getSnackCalories() == null ? 0 : currentEntry.getSnackCalories();
 
         switch (mealType) {
-            case "breakfast" -> breakfast = calories;
-            case "lunch"     -> lunch = calories;
-            case "dinner"    -> dinner = calories;
-            case "snack"     -> snack = calories;
+            case "breakfast" -> breakfast = caloriesToAdd;
+            case "lunch"     -> lunch = caloriesToAdd;
+            case "dinner"    -> dinner = caloriesToAdd;
+            case "snack"     -> snack = caloriesToAdd;
         }
 
         FitnessEntry updatedEntry = new FitnessEntry(date, currentEntry.getWeight(), breakfast, lunch, dinner, snack);
