@@ -15,6 +15,7 @@ public class DashboardView extends BorderPane {
     public DashboardView() {
         this.manager = new FitnessDataManager(LocalDate.now().minusDays(30));
 
+        //range dropdown
         ComboBox<String> dateRangeDropdown = new ComboBox<>();
         dateRangeDropdown.getItems().addAll("Last 7 days", "Last 30 days");
         dateRangeDropdown.setValue("Last 30 days");
@@ -37,12 +38,14 @@ public class DashboardView extends BorderPane {
         DatePicker caloriesDatePicker = new DatePicker(LocalDate.now());
         Button caloriesButton = new Button("Add calories");
 
+        //range dropdown event handler
         dateRangeDropdown.setOnAction(e -> {
             currentDaysRange = dateRangeDropdown.getValue().equals("Last 7 days") ? 7 : 30;
             weightChart.updateWeightChart(manager, currentDaysRange);
             caloriesChart.updateCaloriesChart(manager, currentDaysRange);
         });
 
+        //weight button event handler
         weightButton.setOnAction(e -> {
             try {
                 double weight = Double.parseDouble(weightInput.getText());
@@ -55,6 +58,7 @@ public class DashboardView extends BorderPane {
             }
         });
 
+        //calories button event handler
         caloriesButton.setOnAction(e -> {
             try {
                 int cals = Integer.parseInt(caloriesInput.getText());
@@ -67,6 +71,7 @@ public class DashboardView extends BorderPane {
             }
         });
 
+        //UI setup
         HBox topBar = new HBox(10, new Label("Date range:"), dateRangeDropdown);
         topBar.setPadding(new Insets(10));
         this.setTop(topBar);
