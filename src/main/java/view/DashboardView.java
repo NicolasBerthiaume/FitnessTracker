@@ -29,32 +29,26 @@ public class DashboardView extends BorderPane {
         // Weight controls
         TextField weightInput = new TextField();
         weightInput.setPromptText("Enter weight");
-
-        // Weight date picker
         DatePicker weightDatePicker = new DatePicker(LocalDate.now());
         Button weightButton = new Button("Add weight");
 
         // Calories controls
         TextField caloriesInput = new TextField();
         caloriesInput.setPromptText("Enter calories");
-
-        // Meal dropdown
-        ComboBox<String> mealDropdown = new ComboBox<>();
-        mealDropdown.getItems().addAll("Breakfast", "Lunch", "Dinner");
-        mealDropdown.setValue("Breakfast");
-
-        // Calories date picker
         DatePicker caloriesDatePicker = new DatePicker(LocalDate.now());
+        ComboBox<String> mealTypeDropdown = new ComboBox<>();
+        mealTypeDropdown.getItems().addAll("Breakfast", "Lunch", "Dinner", "Snack");
+        mealTypeDropdown.setValue("Breakfast");
         Button caloriesButton = new Button("Add calories");
 
-        // Range dropdown event handler
+        // Date range dropdown event
         dateRangeDropdown.setOnAction(e -> {
             currentDaysRange = dateRangeDropdown.getValue().equals("Last 7 days") ? 7 : 30;
             weightChart.updateWeightChart(manager, currentDaysRange);
             caloriesChart.updateCaloriesChart(manager, currentDaysRange);
         });
 
-        // Weight button handler
+        // Weight button event
         weightButton.setOnAction(e -> {
             try {
                 double weight = Double.parseDouble(weightInput.getText());
@@ -67,22 +61,22 @@ public class DashboardView extends BorderPane {
             }
         });
 
-        // Calories button handler
+        // Calories button event
         caloriesButton.setOnAction(e -> {
             try {
                 int cals = Integer.parseInt(caloriesInput.getText());
                 LocalDate selectedDate = caloriesDatePicker.getValue();
-                String meal = mealDropdown.getValue();
+                String mealType = mealTypeDropdown.getValue();
 
-                if (meal != null) {
-                    switch (meal) {
-                        case "Breakfast" -> manager.addBreakfastCalories(selectedDate, cals);
-                        case "Lunch"     -> manager.addLunchCalories(selectedDate, cals);
-                        case "Dinner"    -> manager.addDinnerCalories(selectedDate, cals);
-                    }
-                    caloriesChart.updateCaloriesChart(manager, currentDaysRange);
-                    caloriesInput.clear();
+                switch (mealType) {
+                    case "Breakfast" -> manager.addBreakfastCalories(selectedDate, cals);
+                    case "Lunch"     -> manager.addLunchCalories(selectedDate, cals);
+                    case "Dinner"    -> manager.addDinnerCalories(selectedDate, cals);
+                    case "Snack"     -> manager.addSnackCalories(selectedDate, cals);
                 }
+
+                caloriesChart.updateCaloriesChart(manager, currentDaysRange);
+                caloriesInput.clear();
             } catch (NumberFormatException ex) {
                 caloriesInput.setText("Invalid input");
             }
@@ -91,10 +85,12 @@ public class DashboardView extends BorderPane {
         // UI setup
         HBox topBar = new HBox(10, new Label("Date range:"), dateRangeDropdown);
         topBar.setPadding(new Insets(10));
-        this.setTop(topBar);
 
         HBox weightControls = new HBox(10, new Label("Weight:"), weightInput, weightDatePicker, weightButton);
-        HBox caloriesControls = new HBox(10, new Label("Calories:"), caloriesInput, mealDropdown, caloriesDatePicker, caloriesButton);
+        HBox caloriesControls = new HBox(10,
+                new Label("Calories:"), caloriesInput,
+                new Label("for"), mealTypeDropdown,
+                caloriesDatePicker, caloriesButton);
 
         VBox inputBox = new VBox(10, weightControls, caloriesControls);
         inputBox.setPadding(new Insets(10));
@@ -102,6 +98,7 @@ public class DashboardView extends BorderPane {
         VBox charts = new VBox(20, weightChart, caloriesChart);
         charts.setPadding(new Insets(10));
 
+        this.setTop(topBar);
         this.setCenter(charts);
         this.setBottom(inputBox);
     }

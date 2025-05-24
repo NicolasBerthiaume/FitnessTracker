@@ -65,11 +65,9 @@ public class CaloriesChartView extends VBox {
             for (LocalDate date : data.keySet()) {
                 if (date.isBefore(startDate)) continue;
                 FitnessEntry entry = data.get(date);
-                if (entry.getTotalCalories() != null) {
-                    String label = date.format(dateFormatter);
-                    xAxis.getCategories().add(label);
-                    totalSeries.getData().add(new XYChart.Data<>(label, entry.getTotalCalories()));
-                }
+                String label = date.format(dateFormatter);
+                xAxis.getCategories().add(label);
+                totalSeries.getData().add(new XYChart.Data<>(label, entry.getTotalCalories()));
             }
 
             caloriesChart.getData().add(totalSeries);
@@ -78,10 +76,12 @@ public class CaloriesChartView extends VBox {
             XYChart.Series<String, Number> breakfastSeries = new XYChart.Series<>();
             XYChart.Series<String, Number> lunchSeries = new XYChart.Series<>();
             XYChart.Series<String, Number> dinnerSeries = new XYChart.Series<>();
+            XYChart.Series<String, Number> snackSeries = new XYChart.Series<>();
 
             breakfastSeries.setName("Breakfast");
             lunchSeries.setName("Lunch");
             dinnerSeries.setName("Dinner");
+            snackSeries.setName("Snack");
 
             for (LocalDate date : data.keySet()) {
                 if (date.isBefore(startDate)) continue;
@@ -95,15 +95,20 @@ public class CaloriesChartView extends VBox {
                     lunchSeries.getData().add(new XYChart.Data<>(label, entry.getLunchCalories()));
                 if (entry.getDinnerCalories() != null)
                     dinnerSeries.getData().add(new XYChart.Data<>(label, entry.getDinnerCalories()));
+                if (entry.getSnackCalories() != null)
+                    snackSeries.getData().add(new XYChart.Data<>(label, entry.getSnackCalories()));
             }
 
-            caloriesChart.getData().addAll(breakfastSeries, lunchSeries, dinnerSeries);
+            caloriesChart.getData().addAll(breakfastSeries, lunchSeries, dinnerSeries, snackSeries);
             installTooltips(breakfastSeries);
             installTooltips(lunchSeries);
             installTooltips(dinnerSeries);
+            installTooltips(snackSeries);
         }
     }
 
+    //good implementation, could be copied for WeightChartView
+    //especially if we want to compare multiple data?
     private void installTooltips(XYChart.Series<String, Number> series) {
         Platform.runLater(() -> {
             for (XYChart.Data<String, Number> dataPoint : series.getData()) {
@@ -117,4 +122,3 @@ public class CaloriesChartView extends VBox {
         });
     }
 }
-
