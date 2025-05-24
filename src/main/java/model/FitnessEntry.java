@@ -41,7 +41,7 @@ public class FitnessEntry {
         return dinnerCalories;
     }
 
-    public int getTotalCalories() {
+    public Integer getTotalCalories() {
         return (breakfastCalories != null? breakfastCalories : 0)
                 + (lunchCalories != null? lunchCalories : 0)
                 + (dinnerCalories != null? dinnerCalories : 0);

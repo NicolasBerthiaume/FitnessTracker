@@ -2,10 +2,11 @@ package view;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.chart.*;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import model.FitnessDataManager;
 import model.FitnessEntry;
 
@@ -15,12 +16,10 @@ import java.util.Map;
 
 public class CaloriesChartView extends VBox {
     private final BarChart<String, Number> caloriesChart;
-    private final XYChart.Series<String, Number> breakfastSeries;
-    private final XYChart.Series<String, Number> lunchSeries;
-    private final XYChart.Series<String, Number> dinnerSeries;
-    private final XYChart.Series<String, Number> totalSeries;
     private final CategoryAxis xAxis;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
+    private final ToggleGroup viewToggleGroup;
+    private boolean showTotalCalories = true;
 
     public CaloriesChartView(FitnessDataManager fitnessDataManager) {
         xAxis = new CategoryAxis();
@@ -30,23 +29,25 @@ public class CaloriesChartView extends VBox {
 
         caloriesChart = new BarChart<>(xAxis, yAxis);
         caloriesChart.setAnimated(false);
-        caloriesChart.setTitle("Daily Calorie Intake by Meal");
+        caloriesChart.setTitle("Daily Calorie Intake");
 
-        breakfastSeries = new XYChart.Series<>();
-        breakfastSeries.setName("Breakfast");
+        // UI toggle between meal breakdown and total calories
+        viewToggleGroup = new ToggleGroup();
+        RadioButton totalToggle = new RadioButton("Total Calories");
+        RadioButton breakdownToggle = new RadioButton("Meal Breakdown");
+        totalToggle.setToggleGroup(viewToggleGroup);
+        breakdownToggle.setToggleGroup(viewToggleGroup);
+        totalToggle.setSelected(true);
 
-        lunchSeries = new XYChart.Series<>();
-        lunchSeries.setName("Lunch");
+        HBox toggleBox = new HBox(10, new Label("View:"), totalToggle, breakdownToggle);
+        toggleBox.setPadding(new Insets(10));
 
-        dinnerSeries = new XYChart.Series<>();
-        dinnerSeries.setName("Dinner");
+        viewToggleGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
+            showTotalCalories = totalToggle.isSelected();
+            updateCaloriesChart(fitnessDataManager, 30);
+        });
 
-        totalSeries = new XYChart.Series<>();
-        totalSeries.setName("Total");
-
-        caloriesChart.getData().addAll(breakfastSeries, lunchSeries, dinnerSeries, totalSeries);
-        this.getChildren().add(caloriesChart);
-
+        this.getChildren().addAll(toggleBox, caloriesChart);
         updateCaloriesChart(fitnessDataManager, 30);
     }
 
@@ -54,52 +55,66 @@ public class CaloriesChartView extends VBox {
         LocalDate startDate = LocalDate.now().minusDays(daysToShow);
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
 
-        breakfastSeries.getData().clear();
-        lunchSeries.getData().clear();
-        dinnerSeries.getData().clear();
-        totalSeries.getData().clear();
+        caloriesChart.getData().clear();
         xAxis.setCategories(FXCollections.observableArrayList());
 
-        for (LocalDate date : data.keySet()) {
-            if (date.isBefore(startDate)) continue;
+        if (showTotalCalories) {
+            XYChart.Series<String, Number> totalSeries = new XYChart.Series<>();
+            totalSeries.setName("Total Calories");
 
-            FitnessEntry entry = data.get(date);
-            String label = date.format(dateFormatter);
-            xAxis.getCategories().add(label);
+            for (LocalDate date : data.keySet()) {
+                if (date.isBefore(startDate)) continue;
+                FitnessEntry entry = data.get(date);
+                if (entry.getTotalCalories() != null) {
+                    String label = date.format(dateFormatter);
+                    xAxis.getCategories().add(label);
+                    totalSeries.getData().add(new XYChart.Data<>(label, entry.getTotalCalories()));
+                }
+            }
 
-            Integer b = entry.getBreakfastCalories();
-            Integer l = entry.getLunchCalories();
-            Integer d = entry.getDinnerCalories();
+            caloriesChart.getData().add(totalSeries);
+            installTooltips(totalSeries);
+        } else {
+            XYChart.Series<String, Number> breakfastSeries = new XYChart.Series<>();
+            XYChart.Series<String, Number> lunchSeries = new XYChart.Series<>();
+            XYChart.Series<String, Number> dinnerSeries = new XYChart.Series<>();
 
-            int total = 0;
-            if (b != null) {
-                breakfastSeries.getData().add(new XYChart.Data<>(label, b));
-                total += b;
+            breakfastSeries.setName("Breakfast");
+            lunchSeries.setName("Lunch");
+            dinnerSeries.setName("Dinner");
+
+            for (LocalDate date : data.keySet()) {
+                if (date.isBefore(startDate)) continue;
+                FitnessEntry entry = data.get(date);
+                String label = date.format(dateFormatter);
+                xAxis.getCategories().add(label);
+
+                if (entry.getBreakfastCalories() != null)
+                    breakfastSeries.getData().add(new XYChart.Data<>(label, entry.getBreakfastCalories()));
+                if (entry.getLunchCalories() != null)
+                    lunchSeries.getData().add(new XYChart.Data<>(label, entry.getLunchCalories()));
+                if (entry.getDinnerCalories() != null)
+                    dinnerSeries.getData().add(new XYChart.Data<>(label, entry.getDinnerCalories()));
             }
-            if (l != null) {
-                lunchSeries.getData().add(new XYChart.Data<>(label, l));
-                total += l;
-            }
-            if (d != null) {
-                dinnerSeries.getData().add(new XYChart.Data<>(label, d));
-                total += d;
-            }
-            if (total > 0) {
-                totalSeries.getData().add(new XYChart.Data<>(label, total));
-            }
+
+            caloriesChart.getData().addAll(breakfastSeries, lunchSeries, dinnerSeries);
+            installTooltips(breakfastSeries);
+            installTooltips(lunchSeries);
+            installTooltips(dinnerSeries);
         }
+    }
 
+    private void installTooltips(XYChart.Series<String, Number> series) {
         Platform.runLater(() -> {
-            for (XYChart.Series<String, Number> series : caloriesChart.getData()) {
-                for (XYChart.Data<String, Number> dataPoint : series.getData()) {
-                    Node node = dataPoint.getNode();
-                    if (node != null) {
-                        String tooltipText = series.getName() + " on " + dataPoint.getXValue() + ": " + dataPoint.getYValue() + " cal";
-                        Tooltip tooltip = new Tooltip(tooltipText);
-                        Tooltip.install(node, tooltip);
-                    }
+            for (XYChart.Data<String, Number> dataPoint : series.getData()) {
+                Node node = dataPoint.getNode();
+                if (node != null) {
+                    String tooltipText = series.getName() + " on " + dataPoint.getXValue() + ": " + dataPoint.getYValue() + " cal";
+                    Tooltip tooltip = new Tooltip(tooltipText);
+                    Tooltip.install(node, tooltip);
                 }
             }
         });
     }
 }
+
