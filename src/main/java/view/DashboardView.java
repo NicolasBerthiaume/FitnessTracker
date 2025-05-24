@@ -18,17 +18,22 @@ public class DashboardView extends BorderPane {
         CaloriesChartView caloriesChart = new CaloriesChartView(manager);
 
         TextField weightInput = new TextField();
-        weightInput.setPromptText("Enter today's weight");
+        weightInput.setPromptText("Enter weight");
+
+        DatePicker weightDatePicker = new DatePicker(LocalDate.now());
         Button weightButton = new Button("Add weight");
 
         TextField caloriesInput = new TextField();
-        caloriesInput.setPromptText("Enter today's calories");
+        caloriesInput.setPromptText("Enter calories");
+
+        DatePicker caloriesDatePicker = new DatePicker(LocalDate.now());
         Button caloriesButton = new Button("Add calories");
 
         weightButton.setOnAction(e -> {
             try {
                 double weight = Double.parseDouble(weightInput.getText());
-                manager.addWeight(LocalDate.now(), weight);
+                LocalDate selectedDate = weightDatePicker.getValue();
+                manager.addWeight(selectedDate, weight);
                 weightChart.updateWeightChart(manager);
                 weightInput.clear();
             } catch (NumberFormatException ex) {
@@ -39,7 +44,8 @@ public class DashboardView extends BorderPane {
         caloriesButton.setOnAction(e -> {
             try {
                 int cals = Integer.parseInt(caloriesInput.getText());
-                manager.addCalories(LocalDate.now(), cals);
+                LocalDate selectedDate = caloriesDatePicker.getValue();
+                manager.addCalories(selectedDate, cals);
                 caloriesChart.updateCaloriesChart(manager);
                 caloriesInput.clear();
             } catch (NumberFormatException ex) {
@@ -47,8 +53,8 @@ public class DashboardView extends BorderPane {
             }
         });
 
-        HBox weightControls = new HBox(10, new Label("Weight:"), weightInput, weightButton);
-        HBox caloriesControls = new HBox(10, new Label("Calories:"), caloriesInput, caloriesButton);
+        HBox weightControls = new HBox(10, new Label("Weight:"), weightInput, weightDatePicker, weightButton);
+        HBox caloriesControls = new HBox(10, new Label("Calories:"), caloriesInput, caloriesDatePicker, caloriesButton);
 
         VBox inputBox = new VBox(10, weightControls, caloriesControls);
         inputBox.setPadding(new Insets(10));
