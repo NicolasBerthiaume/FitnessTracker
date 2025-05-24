@@ -15,22 +15,34 @@ public class FitnessDataManager {
     }
 
     public void addWeight(LocalDate date, double weight) {
-        FitnessEntry currentEntry = fitnessData.getOrDefault(date, new FitnessEntry(date, null, null));
-        FitnessEntry updatedEntry = new FitnessEntry(date, weight, currentEntry.getCalories());
-        fitnessData.put(date, updatedEntry);
+        FitnessEntry current = fitnessData.getOrDefault(date, new FitnessEntry(date, null, null, null, null));
+        FitnessEntry updated = new FitnessEntry(date, weight, current.getBreakfastCalories(), current.getLunchCalories(), current.getDinnerCalories());
+        fitnessData.put(date, updated);
         CSVUtil.addWeightEntry(date, weight);
-
-        //refresh
         loadDataFromCSV();
     }
 
-    public void addCalories(LocalDate date, int calories) {
-        FitnessEntry currentEntry = fitnessData.getOrDefault(date, new FitnessEntry(date, null, null));
-        FitnessEntry updatedEntry = new FitnessEntry(date, currentEntry.getWeight(), calories);
-        fitnessData.put(date, updatedEntry);
-        CSVUtil.addCaloriesEntry(date, calories);
+    public void addBreakfastCalories(LocalDate date, int calories) {
+        FitnessEntry current = fitnessData.getOrDefault(date, new FitnessEntry(date, null, null, null, null));
+        FitnessEntry updated = new FitnessEntry(date, current.getWeight(), calories, current.getLunchCalories(), current.getDinnerCalories());
+        fitnessData.put(date, updated);
+        CSVUtil.addCaloriesEntry(date, updated);
+        loadDataFromCSV();
+    }
 
-        //refresh
+    public void addLunchCalories(LocalDate date, int calories) {
+        FitnessEntry current = fitnessData.getOrDefault(date, new FitnessEntry(date, null, null, null, null));
+        FitnessEntry updated = new FitnessEntry(date, current.getWeight(), current.getBreakfastCalories(), calories, current.getDinnerCalories());
+        fitnessData.put(date, updated);
+        CSVUtil.addCaloriesEntry(date, updated);
+        loadDataFromCSV();
+    }
+
+    public void addDinnerCalories(LocalDate date, int calories) {
+        FitnessEntry current = fitnessData.getOrDefault(date, new FitnessEntry(date, null, null, null, null));
+        FitnessEntry updated = new FitnessEntry(date, current.getWeight(), current.getBreakfastCalories(), current.getLunchCalories(), calories);
+        fitnessData.put(date, updated);
+        CSVUtil.addCaloriesEntry(date, updated);
         loadDataFromCSV();
     }
 
@@ -51,8 +63,9 @@ public class FitnessDataManager {
     public Map<LocalDate, Integer> getAllCaloriesData() {
         Map<LocalDate, Integer> caloriesData = new TreeMap<>();
         for (Map.Entry<LocalDate, FitnessEntry> entry : fitnessData.entrySet()) {
-            if (entry.getValue().getCalories() != null) {
-                caloriesData.put(entry.getKey(), entry.getValue().getCalories());
+            Integer total = entry.getValue().getTotalCalories();
+            if (total != null) {
+                caloriesData.put(entry.getKey(), total);
             }
         }
         return caloriesData;
