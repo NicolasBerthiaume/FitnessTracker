@@ -27,6 +27,7 @@ public class CaloriesChartView extends VBox {
         yAxis.setLabel("Calories");
 
         caloriesChart = new BarChart<>(xAxis, yAxis);
+        caloriesChart.setAnimated(false);
         caloriesChart.setTitle("Daily Calories Intake");
         caloriesSeries = new XYChart.Series<>();
         caloriesSeries.setName("Calories");
