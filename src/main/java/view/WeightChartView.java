@@ -48,10 +48,11 @@ public class WeightChartView extends VBox {
         weightChart.getData().add(weightSeries);
 
         this.getChildren().add(weightChart);
-        updateWeightChart(fitnessDataManager);
+        updateWeightChart(fitnessDataManager, 30);
     }
 
-    public void updateWeightChart(FitnessDataManager fitnessDataManager) {
+    public void updateWeightChart(FitnessDataManager fitnessDataManager, int daysToShow) {
+        LocalDate startDate = LocalDate.now().minusDays(daysToShow);
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
 
         weightSeries.getData().clear();
@@ -61,6 +62,7 @@ public class WeightChartView extends VBox {
         xAxis.setCategories(FXCollections.observableArrayList());
 
         for (LocalDate date : data.keySet()) {
+            if (date.isBefore(startDate)) { continue; }
             FitnessEntry entry = data.get(date);
             if (entry.getWeight() != null) {
                 String label = date.format(dateFormatter);

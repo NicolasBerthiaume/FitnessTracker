@@ -33,10 +33,11 @@ public class CaloriesChartView extends VBox {
         caloriesChart.getData().add(caloriesSeries);
 
         this.getChildren().add(caloriesChart);
-        updateCaloriesChart(fitnessDataManager);
+        updateCaloriesChart(fitnessDataManager, 30);
     }
 
-    public void updateCaloriesChart(FitnessDataManager fitnessDataManager) {
+    public void updateCaloriesChart(FitnessDataManager fitnessDataManager, int daysToShow) {
+        LocalDate startDate = LocalDate.now().minusDays(daysToShow);
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
 
         caloriesSeries.getData().clear();
@@ -46,6 +47,7 @@ public class CaloriesChartView extends VBox {
         xAxis.setCategories(FXCollections.observableArrayList());
 
         for (LocalDate date : data.keySet()) {
+            if (date.isBefore(startDate)) { continue; }
             FitnessEntry entry = data.get(date);
             if (entry.getCalories() != null) {
                 String label = date.format(dateFormatter);
