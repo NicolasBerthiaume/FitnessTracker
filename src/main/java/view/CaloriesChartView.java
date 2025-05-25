@@ -20,8 +20,12 @@ public class CaloriesChartView extends VBox {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
     private final ToggleGroup viewToggleGroup;
     private boolean showTotalCalories = true;
+    private final ComboBox<String> dateRangeDropdown;
+    private final FitnessDataManager fitnessDataManager;
 
     public CaloriesChartView(FitnessDataManager fitnessDataManager) {
+        this.fitnessDataManager = fitnessDataManager;
+
         xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Day");
@@ -31,7 +35,13 @@ public class CaloriesChartView extends VBox {
         caloriesChart.setAnimated(false);
         caloriesChart.setTitle("Daily Calorie Intake");
 
-        // UI toggle between meal breakdown and total calories
+        //date range setup
+        dateRangeDropdown = new ComboBox<>();
+        dateRangeDropdown.getItems().addAll("Last 7 days", "Last 30 days");
+        dateRangeDropdown.setValue("Last 30 days");
+        dateRangeDropdown.setOnAction(e -> updateCaloriesChart());
+
+        // UI toggle between meal breakdown and total calories setup
         viewToggleGroup = new ToggleGroup();
         RadioButton totalToggle = new RadioButton("Total Calories");
         RadioButton breakdownToggle = new RadioButton("Meal Breakdown");
@@ -39,19 +49,25 @@ public class CaloriesChartView extends VBox {
         breakdownToggle.setToggleGroup(viewToggleGroup);
         totalToggle.setSelected(true);
 
+        //set date range UI
+        HBox filterBox = new HBox(10, new Label("Show:"), dateRangeDropdown);
+        filterBox.setPadding(new Insets(10));
+
+        //set calories toggle UI
         HBox toggleBox = new HBox(10, new Label("View:"), totalToggle, breakdownToggle);
         toggleBox.setPadding(new Insets(10));
 
         viewToggleGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             showTotalCalories = totalToggle.isSelected();
-            updateCaloriesChart(fitnessDataManager, 30);
+            updateCaloriesChart();
         });
 
-        this.getChildren().addAll(toggleBox, caloriesChart);
-        updateCaloriesChart(fitnessDataManager, 30);
+        this.getChildren().addAll(filterBox, toggleBox, caloriesChart);
+        updateCaloriesChart();
     }
 
-    public void updateCaloriesChart(FitnessDataManager fitnessDataManager, int daysToShow) {
+    public void updateCaloriesChart() {
+        int daysToShow = dateRangeDropdown.getValue().equals("Last 7 days") ? 7 : 30;
         LocalDate startDate = LocalDate.now().minusDays(daysToShow);
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
 

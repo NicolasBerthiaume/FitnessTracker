@@ -10,7 +10,7 @@ public class FitnessTrackerApp extends Application {
     public void start(Stage stage) {
         DashboardView dashboard = new DashboardView();
 
-        Scene scene = new Scene(dashboard, 1000, 700);
+        Scene scene = new Scene(dashboard, 1200, 900);
         stage.setScene(scene);
         stage.setTitle("Nicolas's Fitness Tracker");
         stage.show();

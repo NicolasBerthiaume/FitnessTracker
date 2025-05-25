@@ -2,9 +2,13 @@ package view;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.chart.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.FitnessDataManager;
 import model.FitnessEntry;
@@ -18,8 +22,12 @@ public class WeightChartView extends VBox {
     private final XYChart.Series<String, Number> weightSeries;
     private final CategoryAxis xAxis;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
+    private final ComboBox<String> dateRangeDropdown;
+    private final FitnessDataManager fitnessDataManager;
 
     public WeightChartView(FitnessDataManager fitnessDataManager) {
+        this.fitnessDataManager = fitnessDataManager;
+
         xAxis = new CategoryAxis();
 
         //sets the maximum of the y-axis to the highest recorded entry +1 (fallback 100)
@@ -48,11 +56,22 @@ public class WeightChartView extends VBox {
         weightSeries.setName("Weight");
         weightChart.getData().add(weightSeries);
 
-        this.getChildren().add(weightChart);
-        updateWeightChart(fitnessDataManager, 30);
+        //date range setup
+        dateRangeDropdown = new ComboBox<>();
+        dateRangeDropdown.getItems().addAll("Last 7 days", "Last 30 days");
+        dateRangeDropdown.setValue("Last 30 days");
+        dateRangeDropdown.setOnAction(e -> updateWeightChart());
+
+        //set date range UI
+        HBox filterBox = new HBox(10, new Label("Show:"), dateRangeDropdown);
+        filterBox.setPadding(new Insets(10));
+
+        this.getChildren().addAll(filterBox, weightChart);
+        updateWeightChart();
     }
 
-    public void updateWeightChart(FitnessDataManager fitnessDataManager, int daysToShow) {
+    public void updateWeightChart() {
+        int daysToShow = dateRangeDropdown.getValue().equals("Last 7 days") ? 7 : 30;
         LocalDate startDate = LocalDate.now().minusDays(daysToShow);
         Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
 
@@ -95,7 +114,7 @@ public class WeightChartView extends VBox {
             for (XYChart.Data<String, Number> dataPoint : weightSeries.getData()) {
                 Node node = dataPoint.getNode();
                 if (node != null) {
-                    String tooltipText = dataPoint.getXValue() + ": " + dataPoint.getYValue() + " kg";
+                    String tooltipText = weightSeries.getName() + " on " + dataPoint.getXValue() + ": " + dataPoint.getYValue() + " kg";
                     Tooltip tooltip = new Tooltip(tooltipText);
                     Tooltip.install(node, tooltip);
                 }

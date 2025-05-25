@@ -16,15 +16,13 @@ public class DashboardView extends BorderPane {
         this.manager = new FitnessDataManager(LocalDate.now().minusDays(30));
 
         // Range dropdown
-        ComboBox<String> dateRangeDropdown = new ComboBox<>();
-        dateRangeDropdown.getItems().addAll("Last 7 days", "Last 30 days");
-        dateRangeDropdown.setValue("Last 30 days");
+
 
         // Charts
         WeightChartView weightChart = new WeightChartView(manager);
         CaloriesChartView caloriesChart = new CaloriesChartView(manager);
-        weightChart.updateWeightChart(manager, currentDaysRange);
-        caloriesChart.updateCaloriesChart(manager, currentDaysRange);
+        weightChart.updateWeightChart();
+        caloriesChart.updateCaloriesChart();
 
         // Weight controls
         TextField weightInput = new TextField();
@@ -42,11 +40,7 @@ public class DashboardView extends BorderPane {
         Button caloriesButton = new Button("Add calories");
 
         // Date range dropdown event
-        dateRangeDropdown.setOnAction(e -> {
-            currentDaysRange = dateRangeDropdown.getValue().equals("Last 7 days") ? 7 : 30;
-            weightChart.updateWeightChart(manager, currentDaysRange);
-            caloriesChart.updateCaloriesChart(manager, currentDaysRange);
-        });
+
 
         // Weight button event
         weightButton.setOnAction(e -> {
@@ -54,7 +48,7 @@ public class DashboardView extends BorderPane {
                 double weight = Double.parseDouble(weightInput.getText());
                 LocalDate selectedDate = weightDatePicker.getValue();
                 manager.addWeight(selectedDate, weight);
-                weightChart.updateWeightChart(manager, currentDaysRange);
+                weightChart.updateWeightChart();
                 weightInput.clear();
             } catch (NumberFormatException ex) {
                 weightInput.setText("Invalid input");
@@ -75,7 +69,7 @@ public class DashboardView extends BorderPane {
                     case "Snack"     -> manager.addSnackCalories(selectedDate, cals);
                 }
 
-                caloriesChart.updateCaloriesChart(manager, currentDaysRange);
+                caloriesChart.updateCaloriesChart();
                 caloriesInput.clear();
             } catch (NumberFormatException ex) {
                 caloriesInput.setText("Invalid input");
@@ -83,8 +77,7 @@ public class DashboardView extends BorderPane {
         });
 
         // UI setup
-        HBox topBar = new HBox(10, new Label("Date range:"), dateRangeDropdown);
-        topBar.setPadding(new Insets(10));
+
 
         HBox weightControls = new HBox(10, new Label("Weight:"), weightInput, weightDatePicker, weightButton);
         HBox caloriesControls = new HBox(10,
@@ -98,7 +91,7 @@ public class DashboardView extends BorderPane {
         VBox charts = new VBox(20, weightChart, caloriesChart);
         charts.setPadding(new Insets(10));
 
-        this.setTop(topBar);
+
         this.setCenter(charts);
         this.setBottom(inputBox);
     }
