@@ -8,15 +8,12 @@ import model.FitnessDataManager;
 
 import java.time.LocalDate;
 
-public class DashboardView extends BorderPane {
+public class NutritionDashboardView extends BorderPane {
     private final FitnessDataManager manager;
     private int currentDaysRange = 30;
 
-    public DashboardView() {
+    public NutritionDashboardView() {
         this.manager = new FitnessDataManager(LocalDate.now().minusDays(30));
-
-        // Range dropdown
-
 
         // Charts
         WeightChartView weightChart = new WeightChartView(manager);
@@ -38,9 +35,6 @@ public class DashboardView extends BorderPane {
         mealTypeDropdown.getItems().addAll("Breakfast", "Lunch", "Dinner", "Snack");
         mealTypeDropdown.setValue("Breakfast");
         Button caloriesButton = new Button("Add calories");
-
-        // Date range dropdown event
-
 
         // Weight button event
         weightButton.setOnAction(e -> {
@@ -77,8 +71,6 @@ public class DashboardView extends BorderPane {
         });
 
         // UI setup
-
-
         HBox weightControls = new HBox(10, new Label("Weight:"), weightInput, weightDatePicker, weightButton);
         HBox caloriesControls = new HBox(10,
                 new Label("Calories:"), caloriesInput,

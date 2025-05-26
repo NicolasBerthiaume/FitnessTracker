@@ -1,6 +1,6 @@
 package model;
 
-import util.CSVUtil;
+import util.NutritionCSVUtil;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -22,7 +22,7 @@ public class FitnessDataManager {
                 current.getDinnerCalories(),
                 current.getSnackCalories());
         fitnessData.put(date, updated);
-        CSVUtil.addWeightEntry(date, weight);
+        NutritionCSVUtil.addWeightEntry(date, weight);
         loadDataFromCSV();
     }
 
@@ -59,7 +59,7 @@ public class FitnessDataManager {
 
         FitnessEntry updatedEntry = new FitnessEntry(date, currentEntry.getWeight(), breakfast, lunch, dinner, snack);
         fitnessData.put(date, updatedEntry);
-        CSVUtil.addCaloriesEntry(date, updatedEntry);
+        NutritionCSVUtil.addCaloriesEntry(date, updatedEntry);
         loadDataFromCSV();
     }
 
@@ -97,7 +97,7 @@ public class FitnessDataManager {
     }
 
     private void loadDataFromCSV() {
-        List<FitnessEntry> entries = CSVUtil.getAllFitnessEntries();
+        List<FitnessEntry> entries = NutritionCSVUtil.getAllFitnessEntries();
         for (FitnessEntry entry : entries) {
             fitnessData.put(entry.getDate(), entry);
         }

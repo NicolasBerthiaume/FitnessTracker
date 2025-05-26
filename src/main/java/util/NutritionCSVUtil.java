@@ -6,7 +6,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 
-public class CSVUtil {
+public class NutritionCSVUtil {
     private static final String CSV_FILE_PATH = "fitness_data.csv";
 
     public static void addWeightEntry(LocalDate date, double weight) {
