@@ -7,8 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import model.FitnessDataManager;
-import model.FitnessEntry;
+import model.NutritionDataManager;
+import model.NutritionEntry;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,9 +21,9 @@ public class CaloriesChartView extends VBox {
     private final ToggleGroup viewToggleGroup;
     private boolean showTotalCalories = true;
     private final ComboBox<String> dateRangeDropdown;
-    private final FitnessDataManager fitnessDataManager;
+    private final NutritionDataManager fitnessDataManager;
 
-    public CaloriesChartView(FitnessDataManager fitnessDataManager) {
+    public CaloriesChartView(NutritionDataManager fitnessDataManager) {
         this.fitnessDataManager = fitnessDataManager;
 
         xAxis = new CategoryAxis();
@@ -69,7 +69,7 @@ public class CaloriesChartView extends VBox {
     public void updateCaloriesChart() {
         int daysToShow = dateRangeDropdown.getValue().equals("Last 7 days") ? 7 : 30;
         LocalDate startDate = LocalDate.now().minusDays(daysToShow);
-        Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
+        Map<LocalDate, NutritionEntry> data = fitnessDataManager.getAllFitnessData();
 
         caloriesChart.getData().clear();
         xAxis.setCategories(FXCollections.observableArrayList());
@@ -80,7 +80,7 @@ public class CaloriesChartView extends VBox {
 
             for (LocalDate date : data.keySet()) {
                 if (date.isBefore(startDate)) continue;
-                FitnessEntry entry = data.get(date);
+                NutritionEntry entry = data.get(date);
                 String label = date.format(dateFormatter);
                 xAxis.getCategories().add(label);
                 totalSeries.getData().add(new XYChart.Data<>(label, entry.getTotalCalories()));
@@ -101,7 +101,7 @@ public class CaloriesChartView extends VBox {
 
             for (LocalDate date : data.keySet()) {
                 if (date.isBefore(startDate)) continue;
-                FitnessEntry entry = data.get(date);
+                NutritionEntry entry = data.get(date);
                 String label = date.format(dateFormatter);
                 xAxis.getCategories().add(label);
 

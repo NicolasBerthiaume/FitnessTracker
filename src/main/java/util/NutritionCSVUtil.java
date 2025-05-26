@@ -1,6 +1,6 @@
 package util;
 
-import model.FitnessEntry;
+import model.NutritionEntry;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -10,9 +10,9 @@ public class NutritionCSVUtil {
     private static final String CSV_FILE_PATH = "fitness_data.csv";
 
     public static void addWeightEntry(LocalDate date, double weight) {
-        Map<LocalDate, FitnessEntry> dataMap = loadDataMap();
-        FitnessEntry existing = dataMap.getOrDefault(date, new FitnessEntry(date, null, null, null, null, null));
-        dataMap.put(date, new FitnessEntry(date,
+        Map<LocalDate, NutritionEntry> dataMap = loadDataMap();
+        NutritionEntry existing = dataMap.getOrDefault(date, new NutritionEntry(date, null, null, null, null, null));
+        dataMap.put(date, new NutritionEntry(date,
                 weight,
                 existing.getBreakfastCalories(),
                 existing.getLunchCalories(),
@@ -21,14 +21,14 @@ public class NutritionCSVUtil {
         saveDataMap(dataMap);
     }
 
-    public static void addCaloriesEntry(LocalDate date, FitnessEntry updatedEntry) {
-        Map<LocalDate, FitnessEntry> dataMap = loadDataMap();
+    public static void addCaloriesEntry(LocalDate date, NutritionEntry updatedEntry) {
+        Map<LocalDate, NutritionEntry> dataMap = loadDataMap();
         dataMap.put(date, updatedEntry);
         saveDataMap(dataMap);
     }
 
-    private static Map<LocalDate, FitnessEntry> loadDataMap() {
-        Map<LocalDate, FitnessEntry> dataMap = new TreeMap<>();
+    private static Map<LocalDate, NutritionEntry> loadDataMap() {
+        Map<LocalDate, NutritionEntry> dataMap = new TreeMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE_PATH))) {
             reader.readLine(); // skip header
             String line;
@@ -41,7 +41,7 @@ public class NutritionCSVUtil {
                     Integer lunch = tokens[3].isEmpty() ? null : Integer.parseInt(tokens[3]);
                     Integer dinner = tokens[4].isEmpty() ? null : Integer.parseInt(tokens[4]);
                     Integer snack = tokens[5].isEmpty() ? null : Integer.parseInt(tokens[5]);
-                    dataMap.put(date, new FitnessEntry(date, weight, breakfast, lunch, dinner, snack));
+                    dataMap.put(date, new NutritionEntry(date, weight, breakfast, lunch, dinner, snack));
                 }
             }
         } catch (IOException e) {
@@ -50,10 +50,10 @@ public class NutritionCSVUtil {
         return dataMap;
     }
 
-    private static void saveDataMap(Map<LocalDate, FitnessEntry> dataMap) {
+    private static void saveDataMap(Map<LocalDate, NutritionEntry> dataMap) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE_PATH))) {
             writer.write("Date,Weight,Breakfast,Lunch,Dinner,Snack\n");
-            for (FitnessEntry entry : dataMap.values()) {
+            for (NutritionEntry entry : dataMap.values()) {
                 writer.write(entry.getDate() + "," +
                         (entry.getWeight() != null ? entry.getWeight() : "") + "," +
                         (entry.getBreakfastCalories() != null ? entry.getBreakfastCalories() : "") + "," +
@@ -66,7 +66,7 @@ public class NutritionCSVUtil {
         }
     }
 
-    public static List<FitnessEntry> getAllFitnessEntries() {
+    public static List<NutritionEntry> getAllFitnessEntries() {
         return new ArrayList<>(loadDataMap().values());
     }
 }

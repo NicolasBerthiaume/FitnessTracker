@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDate;
 
-public class FitnessEntry {
+public class NutritionEntry {
     private final LocalDate date;
     private final Double weight;
     private final Integer breakfastCalories;
@@ -10,12 +10,12 @@ public class FitnessEntry {
     private final Integer dinnerCalories;
     private final Integer snackCalories;
 
-    public FitnessEntry(LocalDate date,
-                        Double weight,
-                        Integer breakfastCalories,
-                        Integer lunchCalories,
-                        Integer dinnerCalories,
-                        Integer snackCalories) {
+    public NutritionEntry(LocalDate date,
+                          Double weight,
+                          Integer breakfastCalories,
+                          Integer lunchCalories,
+                          Integer dinnerCalories,
+                          Integer snackCalories) {
         this.date = date;
         this.weight = weight;
         this.breakfastCalories = breakfastCalories;

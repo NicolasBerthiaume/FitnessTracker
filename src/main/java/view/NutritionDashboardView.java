@@ -4,16 +4,16 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-import model.FitnessDataManager;
+import model.NutritionDataManager;
 
 import java.time.LocalDate;
 
 public class NutritionDashboardView extends BorderPane {
-    private final FitnessDataManager manager;
+    private final NutritionDataManager manager;
     private int currentDaysRange = 30;
 
     public NutritionDashboardView() {
-        this.manager = new FitnessDataManager(LocalDate.now().minusDays(30));
+        this.manager = new NutritionDataManager(LocalDate.now().minusDays(30));
 
         // Charts
         WeightChartView weightChart = new WeightChartView(manager);

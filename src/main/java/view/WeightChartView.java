@@ -10,8 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.FitnessDataManager;
-import model.FitnessEntry;
+import model.NutritionDataManager;
+import model.NutritionEntry;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,9 +23,9 @@ public class WeightChartView extends VBox {
     private final CategoryAxis xAxis;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd");
     private final ComboBox<String> dateRangeDropdown;
-    private final FitnessDataManager fitnessDataManager;
+    private final NutritionDataManager fitnessDataManager;
 
-    public WeightChartView(FitnessDataManager fitnessDataManager) {
+    public WeightChartView(NutritionDataManager fitnessDataManager) {
         this.fitnessDataManager = fitnessDataManager;
 
         xAxis = new CategoryAxis();
@@ -35,12 +35,12 @@ public class WeightChartView extends VBox {
         NumberAxis yAxis;
         double minWeight = fitnessDataManager.getAllFitnessData().values().stream()
                 .filter(e -> e.getWeight() != null)
-                .mapToDouble(FitnessEntry::getWeight)
+                .mapToDouble(NutritionEntry::getWeight)
                 .min().orElse(60); // fallback min
 
         double maxWeight = fitnessDataManager.getAllFitnessData().values().stream()
                 .filter(e -> e.getWeight() != null)
-                .mapToDouble(FitnessEntry::getWeight)
+                .mapToDouble(NutritionEntry::getWeight)
                 .max().orElse(100); // fallback max
 
         yAxis = new NumberAxis(minWeight - 1, maxWeight + 1, 1);
@@ -73,7 +73,7 @@ public class WeightChartView extends VBox {
     public void updateWeightChart() {
         int daysToShow = dateRangeDropdown.getValue().equals("Last 7 days") ? 7 : 30;
         LocalDate startDate = LocalDate.now().minusDays(daysToShow);
-        Map<LocalDate, FitnessEntry> data = fitnessDataManager.getAllFitnessData();
+        Map<LocalDate, NutritionEntry> data = fitnessDataManager.getAllFitnessData();
 
         weightSeries.getData().clear();
 
@@ -86,7 +86,7 @@ public class WeightChartView extends VBox {
 
         for (LocalDate date : data.keySet()) {
             if (date.isBefore(startDate)) { continue; }
-            FitnessEntry entry = data.get(date);
+            NutritionEntry entry = data.get(date);
             if (entry.getWeight() != null) {
                 double weight = entry.getWeight();
                 String label = date.format(dateFormatter);
