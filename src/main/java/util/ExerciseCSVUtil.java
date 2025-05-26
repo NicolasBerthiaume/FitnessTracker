@@ -40,7 +40,7 @@ public class ExerciseCSVUtil {
         return entries;
     }
 
-    private static void saveExerciseEntries(List<ExerciseEntry> entries) {
+    public static void saveExerciseEntries(List<ExerciseEntry> entries) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(EXERCISE_CSV_FILE_PATH))) {
             writer.write("Date,ExerciseName,SetNumber,Reps,WeightLoad\n");
             for (ExerciseEntry entry : entries) {
@@ -55,4 +55,3 @@ public class ExerciseCSVUtil {
         }
     }
 }
-

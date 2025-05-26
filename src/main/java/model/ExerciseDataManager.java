@@ -62,5 +62,17 @@ public class ExerciseDataManager {
             exerciseData.computeIfAbsent(entry.getDate(), k -> new ArrayList<>()).add(entry);
         }
     }
+
+    public void deleteExerciseEntry(ExerciseEntry entry) {
+        LocalDate date = entry.getDate();
+        List<ExerciseEntry> entries = exerciseData.get(date);
+        if (entries != null) {
+            entries.remove(entry);
+            if (entries.isEmpty()) {
+                exerciseData.remove(date);
+            }
+            ExerciseCSVUtil.saveExerciseEntries(getAllExerciseEntries());
+        }
+    }
 }
 

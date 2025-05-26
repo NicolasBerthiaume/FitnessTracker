@@ -47,8 +47,45 @@ public class ExerciseTableView extends BorderPane {
         TableColumn<ExerciseEntry, Double> volumeCol = new TableColumn<>("Volume (lbs)");
         volumeCol.setCellValueFactory(cellData -> cellData.getValue().totalVolumeProperty().asObject());
 
+        //actions for each entry
+        //just supports delete atm
+        TableColumn<ExerciseEntry, Void> actions = new TableColumn<>("Actions");
+        actions.setCellFactory(col -> new TableCell<>() {
+            private final Button deleteButton = new Button("Delete");
+
+            {
+                deleteButton.setOnAction(e -> {
+                    ExerciseEntry entry = getTableView().getItems().get(getIndex());
+
+                    //confirmation pop-up
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirm Deletion");
+                    confirm.setHeaderText(null);
+                    confirm.setContentText("Delete this entry?");
+                    confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+                    confirm.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.YES) {
+                            exerciseDataManager.deleteExerciseEntry(entry);
+                            exerciseData.remove(entry);
+                        }
+                    });
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(deleteButton);
+                }
+            }
+        });
+
         tableView.setItems(exerciseData);
-        tableView.getColumns().addAll(dateCol, nameCol, setCol, repsCol, weightCol, volumeCol);
+        tableView.getColumns().addAll(dateCol, nameCol, setCol, repsCol, weightCol, volumeCol, actions);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
