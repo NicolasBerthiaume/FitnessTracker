@@ -1,8 +1,10 @@
 package view;
 
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import model.ExerciseDataManager;
 import model.ExerciseEntry;
 
@@ -19,8 +21,36 @@ public class ExerciseDashboardView extends BorderPane {
 
         // Controls for input
         DatePicker datePicker = new DatePicker(LocalDate.now());
-        TextField nameInput = new TextField();
-        nameInput.setPromptText("Exercise");
+
+        //exercise dropdown
+        ComboBox<String> exerciseNameDropdown = new ComboBox<>();
+        exerciseNameDropdown.getItems().addAll(manager.getUniqueExerciseNames());
+        exerciseNameDropdown.setEditable(false);
+
+        Button createExerciseButton = new Button("New Exercise");
+
+        //button for creating new exercise names
+        createExerciseButton.setOnAction(ev -> {
+            Stage dialog = new Stage();
+            dialog.setTitle("New Exercise");
+
+            TextField newExerciseField = new TextField();
+            Button saveButton = new Button("Save");
+
+            saveButton.setOnAction(ev2 -> {
+                String newExercise = newExerciseField.getText().trim();
+                if (!newExercise.isEmpty() && !exerciseNameDropdown.getItems().contains(newExercise)) {
+                    exerciseNameDropdown.getItems().add(newExercise);
+                    exerciseNameDropdown.setValue(newExercise);
+                }
+                dialog.close();
+            });
+
+            VBox dialogLayout = new VBox(10, new Label("Exercise Name:"), newExerciseField, saveButton);
+            dialogLayout.setPadding(new Insets(10));
+            dialog.setScene(new Scene(dialogLayout));
+            dialog.show();
+        });
 
         Spinner<Integer> setSpinner = new Spinner<>(1, 100, 1);
         Spinner<Integer> repsSpinner = new Spinner<>(1, 100, 10);
@@ -32,7 +62,7 @@ public class ExerciseDashboardView extends BorderPane {
         // Add button handler
         addButton.setOnAction(e -> {
             LocalDate date = datePicker.getValue();
-            String name = nameInput.getText();
+            String name = exerciseNameDropdown.getValue();
             int set = setSpinner.getValue();
             int reps = repsSpinner.getValue();
             double weight = weightSpinner.getValue();
@@ -40,17 +70,15 @@ public class ExerciseDashboardView extends BorderPane {
             ExerciseEntry entry = new ExerciseEntry(date, name, set, reps, weight);
             manager.addExerciseEntry(entry);
             tableView.refreshData();
-            nameInput.clear();
         });
 
         // Layout
         HBox inputBox = new HBox(10, new Label("Date:"), datePicker,
-                new Label("Exercise:"), nameInput,
+                new Label("Exercise:"), exerciseNameDropdown, createExerciseButton,
                 new Label("Set:"), setSpinner,
                 new Label("Reps:"), repsSpinner,
                 new Label("Weight:"), weightSpinner,
                 addButton);
-        inputBox.setPadding(new Insets(10));
 
         VBox mainLayout = new VBox(10, inputBox, tableView);
         mainLayout.setPadding(new Insets(10));

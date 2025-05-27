@@ -74,5 +74,14 @@ public class ExerciseDataManager {
             ExerciseCSVUtil.saveExerciseEntries(getAllExerciseEntries());
         }
     }
+
+    public List<String> getUniqueExerciseNames() {
+        return exerciseData.values().stream()
+                .flatMap(List::stream)
+                .map(ExerciseEntry::getExerciseName)
+                .distinct()
+                .sorted()
+                .toList();
+    }
 }
 
