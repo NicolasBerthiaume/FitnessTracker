@@ -43,15 +43,10 @@ public class ExerciseDataManager {
     }
 
     public List<ExerciseEntry> getFilteredEntries(LocalDate date, String searchQuery) {
-        List<ExerciseEntry> entriesForDate = exerciseData.getOrDefault(date, new ArrayList<>());
-
-        if (searchQuery == null || searchQuery.isEmpty()) {
-            return entriesForDate;
-        }
-
-        String lowerQuery = searchQuery.toLowerCase();
-        return entriesForDate.stream()
-                .filter(entry -> entry.getExerciseName().toLowerCase().contains(lowerQuery))
+        return exerciseData.values().stream()
+                .flatMap(List::stream)
+                .filter(entry -> date == null || entry.getDate().equals(date))
+                .filter(entry -> searchQuery == null || searchQuery.isEmpty() || entry.getExerciseName().toLowerCase().contains(searchQuery.toLowerCase()))
                 .toList();
     }
 

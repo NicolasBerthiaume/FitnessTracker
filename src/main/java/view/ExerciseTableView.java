@@ -91,18 +91,33 @@ public class ExerciseTableView extends BorderPane {
 
     private HBox createToolbar() {
         DatePicker datePicker = new DatePicker();
-        TextField searchField = new TextField();
-        searchField.setPromptText("Filter by exercise");
+        datePicker.setPromptText("Select date");
+        ComboBox<String> exerciseDropdown = new ComboBox<>();
+        exerciseDropdown.setPromptText("Select exercise");
+        exerciseDropdown.getItems().addAll(exerciseDataManager.getUniqueExerciseNames());
 
         Button filterButton = new Button("Filter");
+        Button clearButton = new Button("Clear Filters");
+
         filterButton.setOnAction(e -> {
             LocalDate selectedDate = datePicker.getValue();
-            String searchQuery = searchField.getText().toLowerCase();
-            List<ExerciseEntry> filtered = exerciseDataManager.getFilteredEntries(selectedDate, searchQuery);
+            String selectedExercise = exerciseDropdown.getValue();
+
+            List<ExerciseEntry> filtered = exerciseDataManager.getFilteredEntries(selectedDate, selectedExercise);
             exerciseData.setAll(filtered);
         });
 
-        HBox box = new HBox(10, new Label("Date:"), datePicker, searchField, filterButton);
+        clearButton.setOnAction(e -> {
+            datePicker.setValue(null);
+            exerciseDropdown.setValue(null);
+            exerciseData.setAll(exerciseDataManager.getAllExerciseEntries());
+        });
+
+        HBox box = new HBox(10,
+                new Label("Date:"), datePicker,
+                new Label("Exercise:"), exerciseDropdown,
+                filterButton, clearButton
+        );
         box.setPadding(new Insets(10));
         return box;
     }

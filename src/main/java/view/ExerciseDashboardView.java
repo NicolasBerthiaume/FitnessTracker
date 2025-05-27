@@ -19,11 +19,12 @@ public class ExerciseDashboardView extends BorderPane {
         // Table view for displaying entries
         ExerciseTableView tableView = new ExerciseTableView(manager);
 
-        // Controls for input
+        // Controls for date input
         DatePicker datePicker = new DatePicker(LocalDate.now());
 
         //exercise dropdown
         ComboBox<String> exerciseNameDropdown = new ComboBox<>();
+        exerciseNameDropdown.setPromptText("Select exercise");
         exerciseNameDropdown.getItems().addAll(manager.getUniqueExerciseNames());
         exerciseNameDropdown.setEditable(false);
 
