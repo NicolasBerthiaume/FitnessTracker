@@ -124,11 +124,16 @@ public class ExerciseDashboardView extends BorderPane {
         int[] setCounter = {1}; // mutable container to track next set number
 
         // Add first set
-        addSetRow(setsBox, setCounter[0]++, true, null);
+        addSetRow(setsBox, setCounter[0]++, true, null, null); // No remove button, no callback needed
 
         Button addSetButton = new Button("Add Set");
         addSetButton.setOnAction(e -> {
-            addSetRow(setsBox, setCounter[0]++, false, exerciseDropdown.getValue());
+            addSetRow(setsBox, setCounter[0]++, false, exerciseDropdown.getValue(), () -> {
+                if (setsBox.getChildren().isEmpty()) {
+                    exerciseDropdown.setDisable(false);
+                    setCounter[0] = 1; // Reset counter
+                }
+            });
         });
 
         Button saveButton = new Button("Save All");
@@ -142,10 +147,19 @@ public class ExerciseDashboardView extends BorderPane {
 
             for (Node node : setsBox.getChildren()) {
                 if (node instanceof HBox row) {
-                    Spinner<Integer> repsSpinner = (Spinner<Integer>) row.getChildren().get(1);
-                    Spinner<Double> weightSpinner = (Spinner<Double>) row.getChildren().get(2);
-                    int set = Integer.parseInt(((Label) row.getChildren().get(0)).getText().replace("Set ", ""));
-                    ExerciseEntry entry = new ExerciseEntry(date, exerciseName, set, repsSpinner.getValue(), weightSpinner.getValue());
+                    Object[] data = (Object[]) row.getUserData();
+                    int set = (int) data[0];
+                    Spinner<Integer> repsSpinner = (Spinner<Integer>) data[1];
+                    Spinner<Double> weightSpinner = (Spinner<Double>) data[2];
+
+                    ExerciseEntry entry = new ExerciseEntry(
+                            date,
+                            exerciseName,
+                            set,
+                            repsSpinner.getValue(),
+                            weightSpinner.getValue()
+                    );
+
                     manager.addExerciseEntry(entry);
                 }
             }
@@ -163,7 +177,7 @@ public class ExerciseDashboardView extends BorderPane {
         dialog.show();
     }
 
-    private void addSetRow(VBox container, int setNumber, boolean isFirstSet, String exerciseName) {
+    private void addSetRow(VBox container, int setNumber, boolean isFirstSet, String exerciseName, Runnable onRemoveCallback) {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
 
@@ -175,14 +189,18 @@ public class ExerciseDashboardView extends BorderPane {
 
         row.getChildren().addAll(setLabel, new Label("Reps:"), repsSpinner, new Label("Weight (kg):"), weightSpinner);
 
-        // add remove button (except for first set)
         if (!isFirstSet) {
             Button removeButton = new Button("❌ Remove");
-            removeButton.setOnAction(e -> container.getChildren().remove(row));
+            removeButton.setOnAction(e -> {
+                container.getChildren().remove(row);
+                if (onRemoveCallback != null) onRemoveCallback.run();
+            });
             row.getChildren().add(removeButton);
         }
 
-        row.setUserData(new Spinner[]{repsSpinner, weightSpinner});
+        // Store only relevant components when saving
+        row.setUserData(new Object[]{setNumber, repsSpinner, weightSpinner});
+
         container.getChildren().add(row);
     }
 
