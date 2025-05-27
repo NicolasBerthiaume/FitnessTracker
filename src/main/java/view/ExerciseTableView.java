@@ -3,9 +3,12 @@ package view;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import model.ExerciseEntry;
 import model.ExerciseDataManager;
 
@@ -48,22 +51,26 @@ public class ExerciseTableView extends BorderPane {
         volumeCol.setCellValueFactory(cellData -> cellData.getValue().totalVolumeProperty().asObject());
 
         //actions for each entry
-        //just supports delete atm
+        //supports edit and delete
         TableColumn<ExerciseEntry, Void> actions = new TableColumn<>("Actions");
         actions.setCellFactory(col -> new TableCell<>() {
             private final Button deleteButton = new Button("Delete");
+            private final Button editButton = new Button("Edit");
+            private final HBox actionButtons = new HBox(5, editButton, deleteButton);
 
             {
+                editButton.setOnAction(e -> {
+                    ExerciseEntry entry = getTableView().getItems().get(getIndex());
+                    showEditDialog(entry);
+                });
+
                 deleteButton.setOnAction(e -> {
                     ExerciseEntry entry = getTableView().getItems().get(getIndex());
-
-                    //confirmation pop-up
                     Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
                     confirm.setTitle("Confirm Deletion");
                     confirm.setHeaderText(null);
                     confirm.setContentText("Delete this entry?");
                     confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-
                     confirm.showAndWait().ifPresent(response -> {
                         if (response == ButtonType.YES) {
                             exerciseDataManager.deleteExerciseEntry(entry);
@@ -79,7 +86,7 @@ public class ExerciseTableView extends BorderPane {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(deleteButton);
+                    setGraphic(actionButtons);
                 }
             }
         });
@@ -97,7 +104,7 @@ public class ExerciseTableView extends BorderPane {
         exerciseDropdown.getItems().addAll(exerciseDataManager.getUniqueExerciseNames());
 
         Button filterButton = new Button("Filter");
-        Button clearButton = new Button("Clear Filters");
+        Button clearButton = new Button("Clear");
 
         filterButton.setOnAction(e -> {
             LocalDate selectedDate = datePicker.getValue();
@@ -124,6 +131,57 @@ public class ExerciseTableView extends BorderPane {
 
     public void refreshData() {
         exerciseData.setAll(exerciseDataManager.getAllExerciseEntries());
+    }
+
+    private void showEditDialog(ExerciseEntry entry) {
+        Stage dialog = new Stage();
+        dialog.setWidth(800);
+        dialog.setTitle("Edit Exercise Entry");
+
+        DatePicker datePicker = new DatePicker(entry.getDate());
+
+        ComboBox<String> exerciseDropdown = new ComboBox<>();
+        exerciseDropdown.getItems().addAll(exerciseDataManager.getUniqueExerciseNames());
+        exerciseDropdown.setValue(entry.getExerciseName());
+
+        Spinner<Integer> setSpinner = new Spinner<>(1, 100, entry.getSetNumber());
+        Spinner<Integer> repsSpinner = new Spinner<>(1, 100, entry.getReps());
+        Spinner<Double> weightSpinner = new Spinner<>(0.0, 1000.0, entry.getWeightLoad(), 5.0);
+        weightSpinner.getValueFactory().setValue(entry.getWeightLoad());
+        weightSpinner.setEditable(true);
+
+        Button saveButton = new Button("Save");
+        saveButton.setOnAction(ev -> {
+            entry.setDate(datePicker.getValue());
+            entry.setExerciseName(exerciseDropdown.getValue());
+            entry.setSetNumber(setSpinner.getValue());
+            entry.setReps(repsSpinner.getValue());
+            entry.setWeightLoad(weightSpinner.getValue());
+
+            exerciseDataManager.updateExerciseEntry(entry);
+            refreshData();
+            dialog.close();
+        });
+
+        HBox layout1 = new HBox(10,
+                new Label("Date:"), datePicker,
+                new Label("Exercise:"), exerciseDropdown
+        );
+
+        HBox layout2 = new HBox(10,
+                new Label("Set:"), setSpinner,
+                new Label("Reps:"), repsSpinner,
+                new Label("Weight:"), weightSpinner,
+                saveButton
+        );
+
+        VBox mainLayout = new VBox(10,
+                layout1,
+                layout2);
+
+        mainLayout.setPadding(new Insets(10));
+        dialog.setScene(new Scene(mainLayout));
+        dialog.show();
     }
 }
 

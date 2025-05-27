@@ -58,6 +58,18 @@ public class ExerciseDataManager {
         }
     }
 
+    public void updateExerciseEntry(ExerciseEntry updatedEntry) {
+        List<ExerciseEntry> allEntries = new ArrayList<>(getAllExerciseEntries()); // convert immutable collected into mutable ArrayList for updating
+        for (int i = 0; i < allEntries.size(); i++) {
+            ExerciseEntry existing = allEntries.get(i);
+            if (existing.equals(updatedEntry)) {
+                allEntries.set(i, updatedEntry);
+                break;
+            }
+        }
+        ExerciseCSVUtil.saveExerciseEntries(allEntries);
+    }
+
     public void deleteExerciseEntry(ExerciseEntry entry) {
         LocalDate date = entry.getDate();
         List<ExerciseEntry> entries = exerciseData.get(date);
