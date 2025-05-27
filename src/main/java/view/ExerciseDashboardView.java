@@ -73,12 +73,23 @@ public class ExerciseDashboardView extends BorderPane {
         });
 
         // Layout
-        HBox inputBox = new HBox(10, new Label("Date:"), datePicker,
-                new Label("Exercise:"), exerciseNameDropdown, createExerciseButton,
+        HBox topRow = new HBox(10,
+                new Label("Date:"), datePicker,
+                new Label("Exercise:"), exerciseNameDropdown, createExerciseButton
+        );
+
+        HBox bottomRow = new HBox(10,
                 new Label("Set:"), setSpinner,
                 new Label("Reps:"), repsSpinner,
                 new Label("Weight:"), weightSpinner,
-                addButton);
+                addButton
+        );
+
+        topRow.setPadding(new Insets(5));
+        bottomRow.setPadding(new Insets(5));
+
+        VBox inputBox = new VBox(10, topRow, bottomRow);
+        inputBox.setPadding(new Insets(10));
 
         VBox mainLayout = new VBox(10, inputBox, tableView);
         mainLayout.setPadding(new Insets(10));
