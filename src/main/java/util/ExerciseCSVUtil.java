@@ -31,7 +31,8 @@ public class ExerciseCSVUtil {
                     int setNumber = Integer.parseInt(tokens[2]);
                     int reps = Integer.parseInt(tokens[3]);
                     double weightLoad = Double.parseDouble(tokens[4]);
-                    entries.add(new ExerciseEntry(date, name, setNumber, reps, weightLoad));
+                    String notes = tokens.length >= 6 ? tokens[5] : ""; //in case of no notes
+                    entries.add(new ExerciseEntry(date, name, setNumber, reps, weightLoad, notes));
                 }
             }
         } catch (IOException e) {
@@ -42,16 +43,27 @@ public class ExerciseCSVUtil {
 
     public static void saveExerciseEntries(List<ExerciseEntry> entries) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(EXERCISE_CSV_FILE_PATH))) {
-            writer.write("Date,ExerciseName,SetNumber,Reps,WeightLoad\n");
+            writer.write("Date,ExerciseName,SetNumber,Reps,WeightLoad,Notes\n");
             for (ExerciseEntry entry : entries) {
                 writer.write(entry.getDate() + "," +
                         entry.getExerciseName() + "," +
                         entry.getSetNumber() + "," +
                         entry.getReps() + "," +
-                        entry.getWeightLoad() + "\n");
+                        entry.getWeightLoad() + "," +
+                        escapeCSV(entry.getNotes()) + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //to ensure that fields with commas, quotes, or newlines are correctly quoted
+    private static String escapeCSV(String input) {
+        if (input == null) return "";
+        if (input.contains(",") || input.contains("\"") || input.contains("\n")) {
+            input = input.replace("\"", "\"\"");
+            return "\"" + input + "\"";
+        }
+        return input;
     }
 }

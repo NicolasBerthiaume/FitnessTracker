@@ -67,6 +67,9 @@ public class ExerciseDashboardView extends BorderPane {
         Button bulkAddButton = new Button("Bulk Add");
         bulkAddButton.setOnAction(e -> showBulkAddDialog(tableView));
 
+        TextField notesField = new TextField();
+        notesField.setPromptText("Notes (optional)");
+
         // Add button handler
         addButton.setOnAction(e -> {
             LocalDate date = datePicker.getValue();
@@ -75,7 +78,8 @@ public class ExerciseDashboardView extends BorderPane {
             int reps = repsSpinner.getValue();
             double weight = weightSpinner.getValue();
 
-            ExerciseEntry entry = new ExerciseEntry(date, name, set, reps, weight);
+            String notes = notesField.getText().trim();
+            ExerciseEntry entry = new ExerciseEntry(date, name, set, reps, weight, notes);
             manager.addExerciseEntry(entry);
             tableView.refreshData();
         });
@@ -97,7 +101,7 @@ public class ExerciseDashboardView extends BorderPane {
         topRow.setPadding(new Insets(5));
         bottomRow.setPadding(new Insets(5));
 
-        VBox inputBox = new VBox(10, topRow, bottomRow);
+        VBox inputBox = new VBox(10, topRow, bottomRow, new Label("Notes:"), notesField);
         inputBox.setPadding(new Insets(10));
 
         VBox mainLayout = new VBox(10, inputBox, tableView);
@@ -151,13 +155,15 @@ public class ExerciseDashboardView extends BorderPane {
                     int set = (int) data[0];
                     Spinner<Integer> repsSpinner = (Spinner<Integer>) data[1];
                     Spinner<Double> weightSpinner = (Spinner<Double>) data[2];
+                    TextField notesField = (TextField) data[3];
 
                     ExerciseEntry entry = new ExerciseEntry(
                             date,
                             exerciseName,
                             set,
                             repsSpinner.getValue(),
-                            weightSpinner.getValue()
+                            weightSpinner.getValue(),
+                            notesField.getText().trim()
                     );
 
                     manager.addExerciseEntry(entry);
@@ -184,10 +190,12 @@ public class ExerciseDashboardView extends BorderPane {
         Label setLabel = new Label("Set #" + setNumber);
         Spinner<Integer> repsSpinner = new Spinner<>(1, 100, 10);
         Spinner<Double> weightSpinner = new Spinner<>(0, 500, 50, 2.5);
+        TextField notesField = new TextField();
+        notesField.setPromptText("Notes");
         weightSpinner.setEditable(true);
         repsSpinner.setEditable(true);
 
-        row.getChildren().addAll(setLabel, new Label("Reps:"), repsSpinner, new Label("Weight (kg):"), weightSpinner);
+        row.getChildren().addAll(setLabel, new Label("Reps:"), repsSpinner, new Label("Weight (kg):"), weightSpinner, new Label("Notes:"), notesField);
 
         if (!isFirstSet) {
             Button removeButton = new Button("❌ Remove");
@@ -199,7 +207,7 @@ public class ExerciseDashboardView extends BorderPane {
         }
 
         // Store only relevant components when saving
-        row.setUserData(new Object[]{setNumber, repsSpinner, weightSpinner});
+        row.setUserData(new Object[]{setNumber, repsSpinner, weightSpinner, notesField});
 
         container.getChildren().add(row);
     }

@@ -50,6 +50,9 @@ public class ExerciseTableView extends BorderPane {
         TableColumn<ExerciseEntry, Double> volumeCol = new TableColumn<>("Volume (lbs)");
         volumeCol.setCellValueFactory(cellData -> cellData.getValue().totalVolumeProperty().asObject());
 
+        TableColumn<ExerciseEntry, String> notesCol = new TableColumn<>("Notes");
+        notesCol.setCellValueFactory(cellData -> cellData.getValue().notesProperty());
+
         //actions for each entry
         //supports edit and delete
         TableColumn<ExerciseEntry, Void> actions = new TableColumn<>("Actions");
@@ -92,7 +95,7 @@ public class ExerciseTableView extends BorderPane {
         });
 
         tableView.setItems(exerciseData);
-        tableView.getColumns().addAll(dateCol, nameCol, setCol, repsCol, weightCol, volumeCol, actions);
+        tableView.getColumns().addAll(dateCol, nameCol, setCol, repsCol, weightCol, volumeCol, notesCol, actions);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
@@ -149,6 +152,9 @@ public class ExerciseTableView extends BorderPane {
         Spinner<Double> weightSpinner = new Spinner<>(0.0, 1000.0, entry.getWeightLoad(), 5.0);
         weightSpinner.getValueFactory().setValue(entry.getWeightLoad());
         weightSpinner.setEditable(true);
+        TextArea notesArea = new TextArea(entry.getNotes());
+        notesArea.setPromptText("Enter notes...");
+        notesArea.setPrefRowCount(3);
 
         Button saveButton = new Button("Save");
         saveButton.setOnAction(ev -> {
@@ -157,6 +163,7 @@ public class ExerciseTableView extends BorderPane {
             entry.setSetNumber(setSpinner.getValue());
             entry.setReps(repsSpinner.getValue());
             entry.setWeightLoad(weightSpinner.getValue());
+            entry.setNotes(notesArea.getText());
 
             exerciseDataManager.updateExerciseEntry(entry);
             refreshData();
@@ -179,8 +186,12 @@ public class ExerciseTableView extends BorderPane {
                 layout1,
                 layout2);
 
+        VBox notesBox = new VBox(new Label("Notes:"), notesArea);
+
+        HBox editLayout = new HBox(10, mainLayout, notesBox);
+
         mainLayout.setPadding(new Insets(10));
-        dialog.setScene(new Scene(mainLayout));
+        dialog.setScene(new Scene(editLayout));
         dialog.show();
     }
 }
