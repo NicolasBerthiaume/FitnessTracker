@@ -3,6 +3,7 @@ package view;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -138,7 +139,7 @@ public class ExerciseTableView extends BorderPane {
 
     private void showEditDialog(ExerciseEntry entry) {
         Stage dialog = new Stage();
-        dialog.setWidth(800);
+        dialog.setWidth(1000);
         dialog.setTitle("Edit Exercise Entry");
 
         DatePicker datePicker = new DatePicker(entry.getDate());
@@ -171,27 +172,34 @@ public class ExerciseTableView extends BorderPane {
         });
 
         HBox layout1 = new HBox(10,
-                new Label("Date:"), datePicker,
-                new Label("Exercise:"), exerciseDropdown
+                new VBox(new Label("Date:"), datePicker),
+                new VBox(new Label("Exercise:"), exerciseDropdown)
         );
 
         HBox layout2 = new HBox(10,
-                new Label("Set:"), setSpinner,
-                new Label("Reps:"), repsSpinner,
-                new Label("Weight:"), weightSpinner,
-                saveButton
+                new VBox(new Label("Set:"), setSpinner),
+                new VBox(new Label("Reps:"), repsSpinner),
+                new VBox(new Label("Weight:"), weightSpinner)
         );
 
         VBox mainLayout = new VBox(10,
                 layout1,
                 layout2);
 
-        VBox notesBox = new VBox(new Label("Notes:"), notesArea);
+        mainLayout.setPadding(new Insets(10));
+
+        VBox notesBox = new VBox(10, new Label("Notes:"), notesArea);
 
         HBox editLayout = new HBox(10, mainLayout, notesBox);
+        HBox buttonBox = new HBox(saveButton);
+        buttonBox.setAlignment(Pos.CENTER_LEFT);
+        buttonBox.setPadding(new Insets(0, 10, 10, 20));
 
-        mainLayout.setPadding(new Insets(10));
-        dialog.setScene(new Scene(editLayout));
+        VBox wholething = new VBox(10, editLayout, buttonBox);
+        editLayout.setPadding(new Insets(10));
+        wholething.setPadding(new Insets(10));
+
+        dialog.setScene(new Scene(wholething));
         dialog.show();
     }
 }
