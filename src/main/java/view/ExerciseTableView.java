@@ -171,35 +171,36 @@ public class ExerciseTableView extends BorderPane {
             dialog.close();
         });
 
-        HBox layout1 = new HBox(10,
+        HBox dateAndExerciseBox = new HBox(10,
                 new VBox(new Label("Date:"), datePicker),
                 new VBox(new Label("Exercise:"), exerciseDropdown)
         );
 
-        HBox layout2 = new HBox(10,
+        HBox setRepsWeightBox = new HBox(10,
                 new VBox(new Label("Set:"), setSpinner),
                 new VBox(new Label("Reps:"), repsSpinner),
                 new VBox(new Label("Weight:"), weightSpinner)
         );
 
-        VBox mainLayout = new VBox(10,
-                layout1,
-                layout2);
+        VBox inputFieldsBox = new VBox(10,
+                dateAndExerciseBox,
+                setRepsWeightBox
+        );
+        inputFieldsBox.setPadding(new Insets(10));
 
-        mainLayout.setPadding(new Insets(10));
+        VBox notesSectionBox = new VBox(10, new Label("Notes:"), notesArea);
 
-        VBox notesBox = new VBox(10, new Label("Notes:"), notesArea);
+        HBox formContentBox = new HBox(10, inputFieldsBox, notesSectionBox);
+        formContentBox.setPadding(new Insets(10));
 
-        HBox editLayout = new HBox(10, mainLayout, notesBox);
-        HBox buttonBox = new HBox(saveButton);
-        buttonBox.setAlignment(Pos.CENTER_LEFT);
-        buttonBox.setPadding(new Insets(0, 10, 10, 20));
+        HBox saveButtonBox = new HBox(saveButton);
+        saveButtonBox.setAlignment(Pos.CENTER_LEFT);
+        saveButtonBox.setPadding(new Insets(0, 10, 10, 20));
 
-        VBox wholething = new VBox(10, editLayout, buttonBox);
-        editLayout.setPadding(new Insets(10));
-        wholething.setPadding(new Insets(10));
+        VBox dialogLayout = new VBox(10, formContentBox, saveButtonBox);
+        dialogLayout.setPadding(new Insets(10));
 
-        dialog.setScene(new Scene(wholething));
+        dialog.setScene(new Scene(dialogLayout));
         dialog.show();
     }
 }

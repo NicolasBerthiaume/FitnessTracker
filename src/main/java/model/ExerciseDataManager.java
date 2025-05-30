@@ -4,6 +4,7 @@ import util.ExerciseCSVUtil;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExerciseDataManager {
     private final Map<LocalDate, List<ExerciseEntry>> exerciseData = new TreeMap<>();
@@ -88,6 +89,22 @@ public class ExerciseDataManager {
                 .map(ExerciseEntry::getExerciseName)
                 .distinct()
                 .sorted()
+                .toList();
+    }
+
+    public List<ExerciseEntry> getHeaviestSetPerDay(String exerciseName) {
+        return getAllExerciseEntries().stream()
+                .filter(e -> e.getExerciseName().equalsIgnoreCase(exerciseName))
+                .collect(Collectors.groupingBy(
+                        ExerciseEntry::getDate,
+                        Collectors.collectingAndThen(
+                                Collectors.maxBy(Comparator.comparingDouble(ExerciseEntry::getWeightLoad)),
+                                Optional::get
+                        )
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
                 .toList();
     }
 }
