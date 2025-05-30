@@ -7,13 +7,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import view.NutritionDashboardView;
-import view.ExerciseDashboardView;
+import view.WeightLiftingDashboardView;
 
 public class FitnessTrackerApp extends Application {
     @Override
     public void start(Stage stage) {
         NutritionDashboardView dashboardView = new NutritionDashboardView();
-        ExerciseDashboardView exerciseDashboardView = new ExerciseDashboardView();
+        WeightLiftingDashboardView exerciseDashboardView = new WeightLiftingDashboardView();
 
         // StackPane to hold both Nutrition and Exercise Dashboards
         StackPane viewContainer = new StackPane(dashboardView, exerciseDashboardView);

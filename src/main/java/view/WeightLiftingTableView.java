@@ -16,12 +16,12 @@ import model.ExerciseDataManager;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ExerciseTableView extends BorderPane {
+public class WeightLiftingTableView extends BorderPane {
     private final TableView<ExerciseEntry> tableView = new TableView<>();
     private final ObservableList<ExerciseEntry> exerciseData = FXCollections.observableArrayList();
     private final ExerciseDataManager exerciseDataManager;
 
-    public ExerciseTableView(ExerciseDataManager manager) {
+    public WeightLiftingTableView(ExerciseDataManager manager) {
         this.exerciseDataManager = manager;
         this.exerciseData.addAll(manager.getAllExerciseEntries());
 
