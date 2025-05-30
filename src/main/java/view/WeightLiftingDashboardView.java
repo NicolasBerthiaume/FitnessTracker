@@ -135,19 +135,13 @@ public class WeightLiftingDashboardView extends BorderPane {
         exerciseDropdown.setPromptText("Select exercise");
 
         VBox setsBox = new VBox(10);  // This will hold all the sets
-        int[] setCounter = {1}; // mutable container to track next set number
 
         // Add first set
-        addSetRow(setsBox, setCounter[0]++, true, null, null); // No remove button, no callback needed
+        addSetRow(setsBox, true); // No remove button for first set
 
         Button addSetButton = new Button("Add Set");
         addSetButton.setOnAction(e -> {
-            addSetRow(setsBox, setCounter[0]++, false, exerciseDropdown.getValue(), () -> {
-                if (setsBox.getChildren().isEmpty()) {
-                    exerciseDropdown.setDisable(false);
-                    setCounter[0] = 1; // Reset counter
-                }
-            });
+            addSetRow(setsBox, false); // Add set with remove button
         });
 
         Button saveButton = new Button("Save All");
@@ -194,11 +188,12 @@ public class WeightLiftingDashboardView extends BorderPane {
         dialog.show();
     }
 
-    private void addSetRow(VBox container, int setNumber, boolean isFirstSet, String exerciseName, Runnable onRemoveCallback) {
+    private void addSetRow(VBox container, boolean isFirstSet) {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
 
-        Label setLabel = new Label("Set #" + setNumber);
+        // Set number will be determined by renumberSets()
+        Label setLabel = new Label("Set #1");
         Spinner<Integer> repsSpinner = new Spinner<>(1, 100, 10);
         Spinner<Double> weightSpinner = new Spinner<>(0, 500, 50, 2.5);
         TextField notesField = new TextField();
@@ -212,15 +207,34 @@ public class WeightLiftingDashboardView extends BorderPane {
             Button removeButton = new Button("❌ Remove");
             removeButton.setOnAction(e -> {
                 container.getChildren().remove(row);
-                if (onRemoveCallback != null) onRemoveCallback.run();
+                renumberSets(container); // Renumber after removal
             });
             row.getChildren().add(removeButton);
         }
 
-        // Store only relevant components when saving
-        row.setUserData(new Object[]{setNumber, repsSpinner, weightSpinner, notesField});
+        // Store components for saving - set number will be updated by renumberSets
+        row.setUserData(new Object[]{1, repsSpinner, weightSpinner, notesField});
 
         container.getChildren().add(row);
+        renumberSets(container); // Renumber after addition
+    }
+
+    private void renumberSets(VBox container) {
+        int setNumber = 1;
+        for (Node node : container.getChildren()) {
+            if (node instanceof HBox row) {
+                // Update the label
+                Label setLabel = (Label) row.getChildren().get(0);
+                setLabel.setText("Set #" + setNumber);
+
+                // Update the stored data
+                Object[] data = (Object[]) row.getUserData();
+                data[0] = setNumber; // Update set number
+                row.setUserData(data);
+
+                setNumber++;
+            }
+        }
     }
 
     private void showAlert(String message) {
