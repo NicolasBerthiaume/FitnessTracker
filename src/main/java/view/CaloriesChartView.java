@@ -62,7 +62,17 @@ public class CaloriesChartView extends VBox {
             updateCaloriesChart();
         });
 
-        this.getChildren().addAll(filterBox, toggleBox, caloriesChart);
+        VBox chartContainer = new VBox(caloriesChart);
+        chartContainer.setPadding(new Insets(15));
+        chartContainer.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #ddd;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"
+        );
+
+        this.getChildren().addAll(filterBox, toggleBox, chartContainer);
         updateCaloriesChart();
     }
 

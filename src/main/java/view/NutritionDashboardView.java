@@ -19,13 +19,14 @@ public class NutritionDashboardView extends BorderPane {
         var weightInputPanel = new WeightInputPanel(manager, weightChart::updateWeightChart);
         var caloriesInputPanel = new CaloriesInputPanel(manager, caloriesChart::updateCaloriesChart);
 
-        var inputBox = new VBox(10, weightInputPanel, caloriesInputPanel);
-        inputBox.setPadding(new Insets(10));
+        var weightSection = new VBox(10, weightChart, weightInputPanel);
+        weightSection.setPadding(new Insets(10, 10, 20, 10));
+        var caloriesSection = new VBox(10, caloriesChart, caloriesInputPanel);
+        caloriesSection.setPadding(new Insets(20, 10, 10, 10));
 
-        var charts = new VBox(20, weightChart, caloriesChart);
-        charts.setPadding(new Insets(10));
-
-        this.setCenter(charts);
-        this.setBottom(inputBox);
+        var nutritionSection = new VBox(10, weightSection, caloriesSection);
+        nutritionSection.setSpacing(10);
+        nutritionSection.setPadding(new Insets(10, 10, 10, 10));
+        this.setCenter(nutritionSection);
     }
 }

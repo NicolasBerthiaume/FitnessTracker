@@ -66,7 +66,17 @@ public class WeightChartView extends VBox {
         HBox filterBox = new HBox(10, new Label("Show:"), dateRangeDropdown);
         filterBox.setPadding(new Insets(10));
 
-        this.getChildren().addAll(filterBox, weightChart);
+        VBox chartContainer = new VBox(weightChart);
+        chartContainer.setPadding(new Insets(15));
+        chartContainer.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #ddd;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"
+        );
+
+        this.getChildren().addAll(filterBox, chartContainer);
         updateWeightChart();
     }
 
