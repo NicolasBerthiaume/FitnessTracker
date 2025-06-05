@@ -21,8 +21,8 @@ public class BulkAddExerciseDialog extends Stage {
         this.refreshCallback = refreshCallback;
 
         setTitle("Bulk Add Exercise Sets");
-        setWidth(700);
-        setHeight(700);
+        setWidth(800);
+        setHeight(600);
 
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));

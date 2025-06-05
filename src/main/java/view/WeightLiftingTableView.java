@@ -29,7 +29,18 @@ public class WeightLiftingTableView extends BorderPane {
         createTable();
         //filter functionality still needs tweaking
         setTop(createToolbar());
-        setCenter(tableView);
+
+        VBox tableContainer = new VBox(tableView);
+        tableContainer.setPadding(new Insets(15));
+        tableContainer.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #ddd;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"
+        );
+
+        setCenter(tableContainer);
     }
 
     private void createTable() {
@@ -129,7 +140,7 @@ public class WeightLiftingTableView extends BorderPane {
                 new Label("Exercise:"), exerciseDropdown,
                 filterButton, clearButton
         );
-        box.setPadding(new Insets(10));
+        box.setPadding(new Insets(10, 10, 20, 10));
         return box;
     }
 

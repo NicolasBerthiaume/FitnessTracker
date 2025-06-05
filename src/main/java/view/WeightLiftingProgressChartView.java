@@ -67,7 +67,17 @@ public class WeightLiftingProgressChartView extends VBox {
         progressControls.setPadding(new Insets(10));
 
         // Add components to this VBox
-        this.getChildren().addAll(progressControls, progressChart);
+        VBox chartContainer = new VBox(progressChart);
+        chartContainer.setPadding(new Insets(15));
+        chartContainer.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #ddd;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"
+        );
+
+        this.getChildren().addAll(progressControls, chartContainer);
         this.setPadding(new Insets(10));
         this.setSpacing(10);
 

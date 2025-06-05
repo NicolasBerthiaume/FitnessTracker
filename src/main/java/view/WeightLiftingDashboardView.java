@@ -21,6 +21,7 @@ public class WeightLiftingDashboardView extends BorderPane {
 
         // Progress chart view
         progressChartView = new WeightLiftingProgressChartView(manager);
+        progressChartView.setPadding(new Insets(20, 10, 10, 10));
 
         // Controls for date and exercise
         DatePicker datePicker = new DatePicker(LocalDate.now());
@@ -82,7 +83,10 @@ public class WeightLiftingDashboardView extends BorderPane {
         VBox inputBox = new VBox(10, topRow, weightLiftingInputPanel, bottomRow);
         inputBox.setPadding(new Insets(10));
 
-        VBox mainLayout = new VBox(10, inputBox, tableView, progressChartView);
+        VBox weightLiftingTableAndInput = new VBox(10, tableView, inputBox);
+        weightLiftingTableAndInput.setPadding(new Insets(10, 10, 20, 10));
+
+        VBox mainLayout = new VBox(10, weightLiftingTableAndInput, progressChartView);
         mainLayout.setPadding(new Insets(10));
 
         this.setCenter(mainLayout);
